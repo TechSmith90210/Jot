@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NotesApp (modifier: Modifier = Modifier) {
-    var notes by remember { mutableStateOf(mutableStateListOf<Note>()) }
+    var notes = remember { mutableStateListOf<Note>() }
     NotesScreen(notes = notes,
         modifier = modifier,
         onNoteAdd = { title, body -> notes.add(Note(title = title, body = body)) },

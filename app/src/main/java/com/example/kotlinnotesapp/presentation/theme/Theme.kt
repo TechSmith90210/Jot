@@ -1,6 +1,5 @@
-package com.example.kotlinnotesapp.ui.theme
+package com.example.kotlinnotesapp.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

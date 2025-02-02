@@ -1,4 +1,4 @@
-package com.example.kotlinnotesapp.ui.components
+package com.example.kotlinnotesapp.presentation.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.example.kotlinnotesapp
+package com.example.kotlinnotesapp.data.model
 
 data class Note (
     val title : String,

@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
+    id ("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose)
+
 }
 
 android {
@@ -37,7 +40,12 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
 }
+
+
 
 dependencies {
 
@@ -56,7 +64,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation (libs.accompanist.navigation.material)
 
-    implementation(libs.navigation.compose) // Latest version
+    implementation (libs.navigation.compose)
+
+    val roomVersion = "2.6.1" // Check for the latest version
+    implementation(libs.androidx.room.runtime)
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlinx.coroutines.android) // Add Coroutine dependency
 
 }

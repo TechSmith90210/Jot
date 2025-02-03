@@ -1,4 +1,5 @@
 package com.example.kotlinnotesapp.presentation
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,26 +14,26 @@ import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 import com.example.kotlinnotesapp.presentation.theme.KotlinNotesAppTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            KotlinNotesAppTheme {
-                val navController = rememberNavController()
-                val notesViewModel = NotesViewModel()
-                NotesApp(
-                    notesViewModel = notesViewModel,
-                    navController = navController,
-                    modifier = Modifier.fillMaxSize())
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      KotlinNotesAppTheme {
+        val navController = rememberNavController()
+        val notesViewModel = NotesViewModel()
+        NotesApp(
+            notesViewModel = notesViewModel,
+            navController = navController,
+            modifier = Modifier.fillMaxSize())
+      }
     }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun NotesAppPreview() {
-    KotlinNotesAppTheme {
-        NotesApp(notesViewModel = NotesViewModel(), navController = rememberNavController())
-    }
+  KotlinNotesAppTheme {
+    NotesApp(notesViewModel = NotesViewModel(), navController = rememberNavController())
+  }
 }

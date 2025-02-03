@@ -17,26 +17,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NoteCard (title: String, body: String) {
-    Card (modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)
-        .border(1.dp, Color.Black, RoundedCornerShape(5.dp)),
-        shape = RoundedCornerShape(5.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
-        ),
-    ) {
-        Column ( modifier = Modifier.padding(16.dp)) {
-            Text(text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-            Text(text = body, style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Justify,
-            )
-        }
+fun NoteCard(title: String, body: String) {
+  Card(
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(10.dp)
+              .border(1.dp, Color.Black, RoundedCornerShape(5.dp)),
+      shape = RoundedCornerShape(5.dp),
+      colors =
+          CardDefaults.cardColors(
+              containerColor = Color.Transparent,
+              contentColor = Color.Black,
+          ),
+  ) {
+    Column(modifier = Modifier.padding(10.dp)) {
+      Text(
+          text = title,
+          style = MaterialTheme.typography.bodyLarge,
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.padding(bottom = 8.dp),
+      )
+      Text(
+          text = body,
+          style = MaterialTheme.typography.bodySmall,
+          textAlign = TextAlign.Justify,
+      )
     }
+  }
 }

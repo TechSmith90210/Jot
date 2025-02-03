@@ -1,15 +1,7 @@
-package com.example.kotlinnotesapp.presentation.addnote
+package com.example.kotlinnotesapp.presentation.editnote
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -40,13 +32,15 @@ import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteScreen(
+fun EditNoteScreen(
+    note: Note, // The existing note to be edited
     notesViewModel: NotesViewModel,
     navController: NavHostController,
     modifier: Modifier
 ) {
-  var title by remember { mutableStateOf("") }
-  var body by remember { mutableStateOf("") }
+  var title by remember { mutableStateOf(note.title) }
+  var body by remember { mutableStateOf(note.body) }
+
   Scaffold(
       containerColor = Color.White,
       modifier = modifier.fillMaxSize(),
@@ -54,7 +48,7 @@ fun AddNoteScreen(
         CenterAlignedTopAppBar(
             title = {
               Text(
-                  text = "Add Note",
+                  text = "Edit Note",
                   color = Color.Black,
                   fontSize = 14.sp,
                   fontWeight = FontWeight.Bold,
@@ -69,7 +63,7 @@ fun AddNoteScreen(
                   tint = Color.Black,
                   modifier =
                       Modifier.size(30.dp).padding(start = 10.dp).clickable {
-                        navController.popBackStack()
+                        navController.popBackStack() // Navigate back
                       })
             })
       },
@@ -77,8 +71,9 @@ fun AddNoteScreen(
         SmallFloatingActionButton(
             onClick = {
               if (title.isNotEmpty() && body.isNotEmpty()) {
-                notesViewModel.addNote(Note(title = title, body = body)) // Add a new note
-                navController.popBackStack() // Navigate back
+                // Update the existing note
+                notesViewModel.updateNote(note.copy(title = title, body = body))
+                navController.popBackStack() // Navigate back after saving
               } else {
                 println("Title or body is empty")
               }
@@ -86,41 +81,38 @@ fun AddNoteScreen(
             containerColor = Color.Blue) {
               Icon(
                   imageVector = Icons.Filled.Check,
-                  contentDescription = "Add Note",
+                  contentDescription = "Save Changes",
                   tint = Color.White,
               )
             }
       }) { paddingValues ->
         Column(modifier = modifier.fillMaxSize().padding(paddingValues).padding(20.dp)) {
-          Box(
-              modifier = Modifier.fillMaxWidth(), // Adds spacing
-              contentAlignment = Alignment.CenterStart) {
-                BasicTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    singleLine = true,
-                    maxLines = 1,
-                    keyboardOptions =
-                        KeyboardOptions(imeAction = ImeAction.Next), // Correct ImeAction
-                    keyboardActions =
-                        KeyboardActions(onNext = { defaultKeyboardAction(ImeAction.Next) }),
-                    textStyle =
-                        TextStyle(
-                            fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black),
-                    modifier = Modifier.fillMaxWidth(),
-                    decorationBox = { innerTextField ->
-                      if (title.isEmpty()) {
-                        Text(
-                            text = "Enter Title",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Gray)
-                      }
-                      innerTextField()
-                    })
-              }
+          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+            BasicTextField(
+                value = title,
+                onValueChange = { title = it },
+                singleLine = true,
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions =
+                    KeyboardActions(onNext = { defaultKeyboardAction(ImeAction.Next) }),
+                textStyle =
+                    TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+                modifier = Modifier.fillMaxWidth(),
+                decorationBox = { innerTextField ->
+                  if (title.isEmpty()) {
+                    Text(
+                        text = "Enter Title",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray)
+                  }
+                  innerTextField()
+                })
+          }
 
           Spacer(modifier = Modifier.height(16.dp))
+
           Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
             BasicTextField(
                 value = body,
@@ -128,21 +120,12 @@ fun AddNoteScreen(
                 modifier = Modifier.fillMaxHeight(1f),
                 textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
                 keyboardActions =
-                    KeyboardActions {
-                      defaultKeyboardAction(
-                          imeAction = ImeAction.Done,
-                      )
-                    },
+                    KeyboardActions(onDone = { defaultKeyboardAction(ImeAction.Done) }),
                 decorationBox = { innerTextField ->
-                  Column {
-                    // Placeholder logic
-                    Box {
-                      if (body.isEmpty()) {
-                        Text("Enter Body", fontSize = 18.sp, color = Color.Gray)
-                      }
-                      innerTextField()
-                    }
+                  if (body.isEmpty()) {
+                    Text("Enter Body", fontSize = 18.sp, color = Color.Gray)
                   }
+                  innerTextField()
                 })
           }
         }
@@ -151,8 +134,10 @@ fun AddNoteScreen(
 
 @Preview
 @Composable
-fun AddNoteScreenPreview() {
-  AddNoteScreen(
+fun EditNoteScreenPreview() {
+  // Preview with a sample note
+  EditNoteScreen(
+      note = Note(id = 1, title = "Sample Note", body = "This is a note body."),
       notesViewModel = NotesViewModel(),
       navController = NavHostController(LocalContext.current),
       modifier = Modifier)

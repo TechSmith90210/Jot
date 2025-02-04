@@ -1,6 +1,5 @@
 package com.example.kotlinnotesapp.presentation.notes
 
-import android.R.attr.onClick
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,8 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import com.example.kotlinnotesapp.data.db.NotesDatabase
 import com.example.kotlinnotesapp.data.model.Note
+import com.example.kotlinnotesapp.data.repository.NoteRepositoryImpl
 import com.example.kotlinnotesapp.presentation.components.NoteCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,44 +40,48 @@ import com.example.kotlinnotesapp.presentation.components.NoteCard
 fun NotesScreen(
     notesViewModel: NotesViewModel,
     onNavigateToAddNote: () -> Unit,
-    navHostController: NavHostController,
-    modifier: Modifier
+    onNavigateToEditNote: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-  Scaffold(
-      containerColor = Color.White,
-      modifier = modifier.fillMaxSize(),
-      topBar = {
-        CenterAlignedTopAppBar(
-            title = {
-              Text(
-                  text = "notes",
-                  color = Color.Black,
-                  fontSize = 14.sp,
-                  fontWeight = FontWeight.Bold,
-              )
-            },
-            colors =
-                TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent),
-        )
-      },
-      floatingActionButton = {
-        SmallFloatingActionButton(
-            onClick = { onNavigateToAddNote() }, containerColor = Color.Black) {
-              Icon(
-                  imageVector = Icons.Default.Add,
-                  contentDescription = "Add Note",
-                  tint = Color.White,
-              )
+    Scaffold(
+        containerColor = Color.White,
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "notes",
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+            )
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(
+                onClick = { onNavigateToAddNote() },
+                containerColor = Color.Black
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Note",
+                    tint = Color.White,
+                )
             }
-      }) { paddingValues ->
+        }
+    ) { paddingValues ->
         NotesList(
-            notes = notesViewModel.notes,
+            notes = notesViewModel.notes.collectAsState().value,
             onDelete = { note -> notesViewModel.deleteNote(note) },
             modifier = modifier,
-            onEdit = { note -> navHostController.navigate("edit_note/${note.id}") },
-            paddingValues = paddingValues)
-      }
+            onEdit = { note -> onNavigateToEditNote(note.id) },
+            paddingValues = paddingValues
+        )
+    }
 }
+
 
 @Composable
 fun NotesList(
@@ -90,7 +95,7 @@ fun NotesList(
       .fillMaxSize()
       .padding(paddingValues)
       .padding(horizontal = 5.dp)) {
-    items(notes) { note ->
+    items(notes, key = { note -> note.id }) { note ->
       val dismissState =
           rememberSwipeToDismissBoxState(
               confirmValueChange = { dismissValue ->
@@ -125,27 +130,14 @@ fun NotesList(
     device = "spec:width=1080px,height=2340px,dpi=440,cutout=punch_hole,navigation=buttons")
 @Composable
 fun NotesScreenPreview() {
-  val notesViewModel =
-      NotesViewModel().apply {
-        addNote(
-            Note(
-                title = "Morning Reflections",
-                body =
-                    "Started the day with a cup of coffee and a quick journaling session. Feeling motivated!"))
-        addNote(
-            Note(
-                title = "Project Ideas",
-                body =
-                    "Thinking of building a simple habit tracker using Jetpack Compose. Need to plan the features."))
-        addNote(
-            Note(
-                title = "Grocery List",
-                body = "Milk, eggs, bread, coffee, and some snacks for the weekend."))
-      }
+    val database = NotesDatabase.getDatabase(LocalContext.current)
+    val repository = NoteRepositoryImpl(database.noteDao())
+    val viewModel = NotesViewModel(repository)
 
   NotesScreen(
-      notesViewModel = notesViewModel,
+      notesViewModel = viewModel,
       onNavigateToAddNote = {},
-      navHostController = NavHostController(LocalContext.current),
-      modifier = Modifier)
+      modifier = Modifier,
+      onNavigateToEditNote = {  }
+  )
 }

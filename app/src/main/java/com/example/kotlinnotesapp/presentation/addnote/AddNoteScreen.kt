@@ -35,7 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.kotlinnotesapp.data.db.NotesDatabase
 import com.example.kotlinnotesapp.data.model.Note
+import com.example.kotlinnotesapp.data.repository.NoteRepositoryImpl
 import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,8 +154,11 @@ fun AddNoteScreen(
 @Preview
 @Composable
 fun AddNoteScreenPreview() {
+    val database = NotesDatabase.getDatabase(LocalContext.current)
+    val repository = NoteRepositoryImpl(database.noteDao())
+    val viewModel = NotesViewModel(repository)
   AddNoteScreen(
-      notesViewModel = NotesViewModel(),
+      notesViewModel =viewModel,
       navController = NavHostController(LocalContext.current),
       modifier = Modifier)
 }

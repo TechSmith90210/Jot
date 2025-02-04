@@ -1,22 +1,44 @@
 package com.example.kotlinnotesapp.presentation.notes
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.kotlinnotesapp.data.model.Note
+import com.example.kotlinnotesapp.domain.repository.NoteRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class NotesViewModel : ViewModel() {
-    private val  _notes = mutableListOf<Note>()
-    val notes : List<Note> get() = _notes
+class NotesViewModel (private val repository: NoteRepository) : ViewModel() {
+    private val  _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes : StateFlow<List<Note>> = _notes
+
+    init {
+        getAllNotes()
+    }
+
+    private fun getAllNotes() {
+        viewModelScope.launch {
+            repository.getAllNotes().collect { fetchedNotes ->
+                _notes.value = fetchedNotes
+            }
+        }
+    }
 
     fun addNote(note: Note) {
-        val newId = note.id ?: if (_notes.isEmpty()) 1 else _notes.maxOf { it.id ?: 0 } + 1
-        _notes.add(note.copy(id = newId))
+        viewModelScope.launch {
+            repository.insertNote(note)
+        }
     }
 
     fun deleteNote (note : Note) {
-        _notes.remove(note)
+        viewModelScope.launch {
+            repository.deleteNote(note)
+        }
     }
 
     fun updateNote (note : Note) {
-        _notes.replaceAll { if (it.id == note.id) note else it }
+        viewModelScope.launch {
+            repository.updateNote(note)
+        }
     }
 }

@@ -7,8 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.kotlinnotesapp.data.db.NotesDatabase
+import com.example.kotlinnotesapp.data.repository.NoteRepositoryImpl
 import com.example.kotlinnotesapp.presentation.navigation.NotesApp
 import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 import com.example.kotlinnotesapp.presentation.theme.KotlinNotesAppTheme
@@ -19,10 +22,12 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent {
       KotlinNotesAppTheme {
+        val database = NotesDatabase.getDatabase(applicationContext)
+        val repository = NoteRepositoryImpl(database.noteDao())
+        val viewModel = NotesViewModel(repository)
         val navController = rememberNavController()
-        val notesViewModel = NotesViewModel()
         NotesApp(
-            notesViewModel = notesViewModel,
+            notesViewModel = viewModel,
             navController = navController,
             modifier = Modifier.fillMaxSize())
       }
@@ -34,6 +39,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NotesAppPreview() {
   KotlinNotesAppTheme {
-    NotesApp(notesViewModel = NotesViewModel(), navController = rememberNavController())
+    val database = NotesDatabase.getDatabase(LocalContext.current)
+    val repository = NoteRepositoryImpl(database.noteDao())
+    val viewModel = NotesViewModel(repository)
+    NotesApp(notesViewModel = viewModel, navController = rememberNavController())
   }
 }

@@ -21,6 +21,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -46,6 +50,7 @@ import com.example.kotlinnotesapp.domain.usecase.NoteUseCases
 import com.example.kotlinnotesapp.domain.usecase.UpdateNoteUseCase
 import com.example.kotlinnotesapp.presentation.navigation.NotesApp
 import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,8 +61,29 @@ fun AddNoteScreen(
 ) {
   var title by remember { mutableStateOf("") }
   var body by remember { mutableStateOf("") }
+  var snackbarHostState = remember { SnackbarHostState() }
+  val scope = rememberCoroutineScope()
+
+  fun showSnackbar(message: String) {
+    scope.launch {
+      snackbarHostState.showSnackbar(
+          message = message, withDismissAction = true, duration = SnackbarDuration.Short)
+    }
+  }
+
   Scaffold(
       containerColor = Color.White,
+      snackbarHost = {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { data ->
+              Snackbar(
+                  snackbarData = data,
+                  containerColor = Color.Black,
+                  contentColor = Color.White,
+                  dismissActionContentColor = Color.White)
+            })
+      },
       modifier = modifier.fillMaxSize(),
       topBar = {
         CenterAlignedTopAppBar(
@@ -85,11 +111,15 @@ fun AddNoteScreen(
       floatingActionButton = {
         SmallFloatingActionButton(
             onClick = {
-              if (title.isNotEmpty() && body.isNotEmpty()) {
-                notesViewModel.addNote(Note(title = title, body = body)) // Add a new note
-                navController.popBackStack() // Navigate back
-              } else {
-                println("Title or body is empty")
+              when {
+                title.isEmpty() && body.isEmpty() -> showSnackbar("Title and body cannot be empty")
+                title.isEmpty() -> showSnackbar("Title cannot be empty")
+                body.isEmpty() -> showSnackbar("Body cannot be empty")
+
+                else -> {
+                  notesViewModel.addNote(Note(title = title, body = body)) // Add a new note
+                  navController.popBackStack() // Navigate back
+                }
               }
             },
             containerColor = Color.Blue) {

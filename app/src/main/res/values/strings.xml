@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kotlin Notes App</string>
+    <string name="app_name">Jot</string>
     <string name = "placeholder_body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia, sem et cursus vehicula, libero odio dictum dolor, non luctus nisi eros eu neque. Phasellus convallis justo ac varius venenatis. In ac velit velit. Nunc eget venenatis leo. Etiam fringilla sapien nec arcu elementum feugiat. Proin suscipit sed purus sed iaculis. Nullam suscipit nisi et nulla volutpat, et mollis purus volutpat.
 </string>
 </resources>

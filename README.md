@@ -41,7 +41,9 @@ To run the project locally, follow these steps:
 
 Here are some screenshots of the app:
 
-![Jot_HomeScreen_2](https://github.com/user-attachments/assets/9afc2a6d-ff7e-4f63-88f8-a5008d2bf4f5) ![Jot_AddNoteScreen](https://github.com/user-attachments/assets/2fd429c7-3437-4138-b888-f2aeb615f74e) ![Jot_EditNoteScreen](https://github.com/user-attachments/assets/30efd88e-1998-421b-9aa8-ab152e7c1777)
+<img src="https://github.com/user-attachments/assets/9afc2a6d-ff7e-4f63-88f8-a5008d2bf4f5" width="200px" /> 
+<img src="https://github.com/user-attachments/assets/2fd429c7-3437-4138-b888-f2aeb615f74e" width="200px" /> 
+<img src="https://github.com/user-attachments/assets/30efd88e-1998-421b-9aa8-ab152e7c1777" width="200px" /> 
 
 ---
 

@@ -30,6 +30,11 @@ import androidx.navigation.NavHostController
 import com.example.kotlinnotesapp.data.db.NotesDatabase
 import com.example.kotlinnotesapp.data.model.Note
 import com.example.kotlinnotesapp.data.repository.NoteRepositoryImpl
+import com.example.kotlinnotesapp.domain.usecase.DeleteNoteUseCase
+import com.example.kotlinnotesapp.domain.usecase.GetNotesUseCase
+import com.example.kotlinnotesapp.domain.usecase.InsertNoteUseCase
+import com.example.kotlinnotesapp.domain.usecase.NoteUseCases
+import com.example.kotlinnotesapp.domain.usecase.UpdateNoteUseCase
 import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,9 +144,19 @@ fun EditNoteScreen(
 fun EditNoteScreenPreview() {
     val database = NotesDatabase.getDatabase(LocalContext.current)
     val repository = NoteRepositoryImpl(database.noteDao())
-    val viewModel = NotesViewModel(repository)
-  // Preview with a sample note
-  EditNoteScreen(
+
+    // Create NoteUseCases object directly and pass to ViewModel
+    val noteUseCases = NoteUseCases(
+        getNotes = GetNotesUseCase(repository),
+        insertNote = InsertNoteUseCase(repository),
+        deleteNote = DeleteNoteUseCase(repository),
+        updateNote = UpdateNoteUseCase(repository)
+    )
+
+    // Passing the NoteUseCases to the ViewModel
+    val viewModel = NotesViewModel(noteUseCases)
+
+    EditNoteScreen(
       note = Note(id = 1, title = "Sample Note", body = "This is a note body."),
       notesViewModel = viewModel,
       navController = NavHostController(LocalContext.current),

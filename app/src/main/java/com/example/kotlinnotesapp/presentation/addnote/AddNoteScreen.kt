@@ -35,9 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.kotlinnotesapp.data.db.NotesDatabase
 import com.example.kotlinnotesapp.data.model.Note
 import com.example.kotlinnotesapp.data.repository.NoteRepositoryImpl
+import com.example.kotlinnotesapp.domain.usecase.DeleteNoteUseCase
+import com.example.kotlinnotesapp.domain.usecase.GetNotesUseCase
+import com.example.kotlinnotesapp.domain.usecase.InsertNoteUseCase
+import com.example.kotlinnotesapp.domain.usecase.NoteUseCases
+import com.example.kotlinnotesapp.domain.usecase.UpdateNoteUseCase
+import com.example.kotlinnotesapp.presentation.navigation.NotesApp
 import com.example.kotlinnotesapp.presentation.notes.NotesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,11 +161,24 @@ fun AddNoteScreen(
 @Preview
 @Composable
 fun AddNoteScreenPreview() {
-    val database = NotesDatabase.getDatabase(LocalContext.current)
-    val repository = NoteRepositoryImpl(database.noteDao())
-    val viewModel = NotesViewModel(repository)
-  AddNoteScreen(
-      notesViewModel =viewModel,
-      navController = NavHostController(LocalContext.current),
-      modifier = Modifier)
+  val database = NotesDatabase.getDatabase(LocalContext.current)
+  val repository = NoteRepositoryImpl(database.noteDao())
+
+  // Create NoteUseCases object directly and pass to ViewModel
+  val noteUseCases =
+      NoteUseCases(
+          getNotes = GetNotesUseCase(repository),
+          insertNote = InsertNoteUseCase(repository),
+          deleteNote = DeleteNoteUseCase(repository),
+          updateNote = UpdateNoteUseCase(repository))
+
+  // Passing the NoteUseCases to the ViewModel
+  val viewModel = NotesViewModel(noteUseCases)
+
+  // Setting up the NavController
+  val navController = rememberNavController()
+
+  // Passing everything into the NotesApp composable
+  NotesApp(
+      notesViewModel = viewModel, navController = navController, modifier = Modifier.fillMaxSize())
 }

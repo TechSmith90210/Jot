@@ -3,42 +3,44 @@ package com.example.kotlinnotesapp.presentation.notes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kotlinnotesapp.data.model.Note
-import com.example.kotlinnotesapp.domain.repository.NoteRepository
+import com.example.kotlinnotesapp.domain.usecase.NoteUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class NotesViewModel (private val repository: NoteRepository) : ViewModel() {
-    private val  _notes = MutableStateFlow<List<Note>>(emptyList())
-    val notes : StateFlow<List<Note>> = _notes
+class NotesViewModel(private val noteUseCases: NoteUseCases) : ViewModel() {
+
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
 
     init {
-        getAllNotes()
+        getNotes()
     }
 
-    private fun getAllNotes() {
+    private fun getNotes() {
         viewModelScope.launch {
-            repository.getAllNotes().collect { fetchedNotes ->
-                _notes.value = fetchedNotes
+            noteUseCases.getNotes().collect { notesList ->
+                _notes.value = notesList
             }
         }
     }
 
     fun addNote(note: Note) {
         viewModelScope.launch {
-            repository.insertNote(note)
+            noteUseCases.insertNote(note)
         }
     }
 
-    fun deleteNote (note : Note) {
+    fun deleteNote(note: Note) {
         viewModelScope.launch {
-            repository.deleteNote(note)
+            noteUseCases.deleteNote(note)
         }
     }
 
-    fun updateNote (note : Note) {
+    fun updateNote(note: Note) {
         viewModelScope.launch {
-            repository.updateNote(note)
+            noteUseCases.updateNote(note)
         }
     }
 }

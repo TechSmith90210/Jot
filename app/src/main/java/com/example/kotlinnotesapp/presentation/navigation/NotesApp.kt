@@ -45,7 +45,7 @@ fun NotesApp(
             modifier = modifier,
         )
       } else {
-        // Handle case where note is not found, perhaps navigate back or show an error message
+        // case where note is not found
         print("NO NOTE FOUND")
       }
     }

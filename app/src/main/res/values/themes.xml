@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.MindPalace.Splash" parent="Theme.Material3.DayNight.NoActionBar">
 
-    <style name="Theme.KotlinNotesApp" parent="android:Theme.Material.Light.NoActionBar" />
+        <item name="android:windowSplashScreenAnimationDuration">2000</item>
+        <item name="android:statusBarColor">#FCF7FF</item>
+
+        <!-- Optional: Control icon size and background -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/white</item>
+
+        <!-- Fullscreen appearance -->
+        <item name="android:windowNoTitle">true</item>
+
+        <!-- Make status bar icons dark -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>
+

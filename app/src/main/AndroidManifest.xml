@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" package="com.mindpalace.app">
+    package="com.mindpalace.app">
 
     <application
         android:name=".MainApplication"
@@ -11,12 +11,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KotlinNotesApp"
-        tools:targetApi="31">
+        android:theme="@style/Theme.MindPalace.Splash"
+        >
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.KotlinNotesApp">
+            android:theme="@style/Theme.MindPalace.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

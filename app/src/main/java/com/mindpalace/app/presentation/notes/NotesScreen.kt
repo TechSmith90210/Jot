@@ -39,7 +39,7 @@ import com.mindpalace.app.domain.usecase.GetNotesUseCase
 import com.mindpalace.app.domain.usecase.InsertNoteUseCase
 import com.mindpalace.app.domain.usecase.NoteUseCases
 import com.mindpalace.app.domain.usecase.UpdateNoteUseCase
-import com.mindspace.app.presentation.components.NoteCard
+import com.mindpalace.app.presentation.components.NoteCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

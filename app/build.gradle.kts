@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mindpalace.app"
-        minSdk = 29
+        minSdk = 31
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.splashscreen)
 
     // Core
@@ -59,6 +60,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.material)
+
 
     // Compose Navigation
     implementation(libs.navigation.compose)
@@ -87,4 +90,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
 }

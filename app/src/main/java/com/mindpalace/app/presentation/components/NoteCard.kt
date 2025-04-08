@@ -1,4 +1,4 @@
-package com.mindspace.app.presentation.components
+package com.mindpalace.app.presentation.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,12 +21,12 @@ fun NoteCard(title: String, body: String) {
       modifier =
           Modifier.fillMaxWidth()
               .padding(10.dp)
-              .border(1.dp, Color.Black, RoundedCornerShape(5.dp)),
+              .border(2.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(5.dp)),
       shape = RoundedCornerShape(5.dp),
       colors =
           CardDefaults.cardColors(
-              containerColor = Color.Transparent,
-              contentColor = Color.Black,
+              containerColor = MaterialTheme.colorScheme.surface,
+              contentColor = MaterialTheme.colorScheme.primary,
           ),
   ) {
     Column(modifier = Modifier.padding(10.dp)) {

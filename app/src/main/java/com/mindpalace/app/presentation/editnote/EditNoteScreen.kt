@@ -10,7 +10,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
@@ -49,14 +52,14 @@ fun EditNoteScreen(
   var body by remember { mutableStateOf(note.body) }
 
   Scaffold(
-      containerColor = Color.White,
       modifier = modifier.fillMaxSize(),
       topBar = {
         CenterAlignedTopAppBar(
             title = {
               Text(
                   text = "Edit Note",
-                  color = Color.Black,
+                  color = MaterialTheme.colorScheme.primary,
+                  style = MaterialTheme.typography.labelSmall,
                   fontSize = 14.sp,
                   fontWeight = FontWeight.Bold,
               )
@@ -64,18 +67,19 @@ fun EditNoteScreen(
             colors =
                 TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent),
             navigationIcon = {
-              Icon(
-                  imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                  contentDescription = "Go Back",
-                  tint = Color.Black,
-                  modifier =
-                      Modifier.size(30.dp).padding(start = 10.dp).clickable {
-                        navController.popBackStack() // Navigate back
-                      })
+               IconButton (
+                        onClick = { navController.popBackStack() }
+                        ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             })
       },
       floatingActionButton = {
-        SmallFloatingActionButton(
+        FloatingActionButton(
             onClick = {
               if (title.isNotEmpty() && body.isNotEmpty()) {
                 // Update the existing note
@@ -85,11 +89,11 @@ fun EditNoteScreen(
                 println("Title or body is empty")
               }
             },
-            containerColor = Color.Blue) {
+            containerColor = MaterialTheme.colorScheme.secondary) {
               Icon(
                   imageVector = Icons.Filled.Check,
                   contentDescription = "Save Changes",
-                  tint = Color.White,
+                  tint =MaterialTheme.colorScheme.onSecondary,
               )
             }
       }) { paddingValues ->
@@ -104,7 +108,7 @@ fun EditNoteScreen(
                 keyboardActions =
                     KeyboardActions(onNext = { defaultKeyboardAction(ImeAction.Next) }),
                 textStyle =
-                    TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+                    TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth(),
                 decorationBox = { innerTextField ->
                   if (title.isEmpty()) {
@@ -112,7 +116,7 @@ fun EditNoteScreen(
                         text = "Enter Title",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray)
+                        color = MaterialTheme.colorScheme.primary)
                   }
                   innerTextField()
                 })
@@ -125,7 +129,7 @@ fun EditNoteScreen(
                 value = body,
                 onValueChange = { body = it },
                 modifier = Modifier.fillMaxHeight(1f),
-                textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
+                textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.primary),
                 keyboardActions =
                     KeyboardActions(onDone = { defaultKeyboardAction(ImeAction.Done) }),
                 decorationBox = { innerTextField ->

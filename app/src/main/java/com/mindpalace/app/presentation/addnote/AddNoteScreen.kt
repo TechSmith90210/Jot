@@ -1,6 +1,5 @@
 package com.mindpalace.app.presentation.addnote
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,7 +16,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
@@ -91,7 +91,8 @@ fun AddNoteScreen(
             title = {
               Text(
                   text = "Add Note",
-                  color = Color.Black,
+                  color = MaterialTheme.colorScheme.primary,
+                  style = MaterialTheme.typography.labelSmall,
                   fontSize = 14.sp,
                   fontWeight = FontWeight.Bold,
               )
@@ -99,18 +100,19 @@ fun AddNoteScreen(
             colors =
                 TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent),
             navigationIcon = {
-              Icon(
-                  imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                  contentDescription = "Go Back",
-                  tint = Color.Black,
-                  modifier =
-                      Modifier.size(30.dp).padding(start = 10.dp).clickable {
-                        navController.popBackStack()
-                      })
+                IconButton(
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             })
       },
       floatingActionButton = {
-        SmallFloatingActionButton(
+        FloatingActionButton(
             onClick = {
               when {
                 title.isEmpty() && body.isEmpty() -> showSnackbar("Title and body cannot be empty")
@@ -123,11 +125,11 @@ fun AddNoteScreen(
                 }
               }
             },
-            containerColor = Color.Blue) {
+            containerColor = MaterialTheme.colorScheme.secondary) {
               Icon(
                   imageVector = Icons.Filled.Check,
                   contentDescription = "Add Note",
-                  tint = Color.White,
+                  tint = MaterialTheme.colorScheme.onSecondary,
               )
             }
       }) { paddingValues ->
@@ -146,7 +148,7 @@ fun AddNoteScreen(
                         KeyboardActions(onNext = { defaultKeyboardAction(ImeAction.Next) }),
                     textStyle =
                         TextStyle(
-                            fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+                            fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.fillMaxWidth(),
                     decorationBox = { innerTextField ->
                       if (title.isEmpty()) {
@@ -166,7 +168,7 @@ fun AddNoteScreen(
                 value = body,
                 onValueChange = { body = it },
                 modifier = Modifier.fillMaxHeight(1f),
-                textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
+                textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.primary),
                 keyboardActions =
                     KeyboardActions {
                       defaultKeyboardAction(

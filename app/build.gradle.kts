@@ -1,18 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jetbrains.kotlin.kapt")
-    id ("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose)
-
+    id("kotlin-kapt") // For Hilt
+    id("com.google.devtools.ksp") // For Room
+    id("com.google.dagger.hilt.android") // Hilt plugin
 }
 
 android {
-    namespace = "com.example.kotlinnotesapp"
+    namespace = "com.mindpalace.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.kotlinnotesapp"
+        applicationId = "com.mindpalace.app"
         minSdk = 29
         targetSdk = 35
         versionCode = 1
@@ -30,33 +30,56 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
 }
 
-
-
 dependencies {
+    implementation(libs.androidx.core.splashscreen)
 
+    // Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // Jetpack Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Compose Navigation
+    implementation(libs.navigation.compose)
+
+    // Accompanist
+    implementation(libs.accompanist.navigation.material)
+
+    // Room with KSP
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,14 +87,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.accompanist.navigation.material)
-
-    implementation (libs.navigation.compose)
-
-    val roomVersion = "2.6.1" // Check for the latest version
-    implementation(libs.androidx.room.runtime)
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.kotlinx.coroutines.android) // Add Coroutine dependency
-
 }

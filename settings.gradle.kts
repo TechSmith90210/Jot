@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Kotlin Notes App"
+rootProject.name = "MindPalace"
 include(":app")
  

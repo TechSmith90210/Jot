@@ -69,6 +69,11 @@ dependencies {
     // Accompanist
     implementation(libs.accompanist.navigation.material)
 
+    // Coil
+    implementation(libs.coil.compose) // or latest
+    implementation(libs.coil.gif)
+    implementation(libs.coil.svg)
+
     // Room with KSP
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -90,6 +95,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 
 }

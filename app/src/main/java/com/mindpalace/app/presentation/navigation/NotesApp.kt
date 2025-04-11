@@ -8,47 +8,67 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import com.mindpalace.app.presentation.addnote.AddNoteScreen
+import com.mindpalace.app.presentation.onboarding.CreateAccountScreen
+import com.mindpalace.app.presentation.onboarding.LoginScreen
+import com.mindpalace.app.presentation.onboarding.SplashScreen
+import com.mindpalace.app.presentation.onboarding.WelcomeScreen
 import com.mindspace.app.presentation.editnote.EditNoteScreen
 import com.mindspace.app.presentation.notes.NotesScreen
 import com.mindspace.app.presentation.notes.NotesViewModel
 
 @Composable
 fun NotesApp(
-    notesViewModel: NotesViewModel,
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+    notesViewModel: NotesViewModel, navController: NavHostController, modifier: Modifier = Modifier
 ) {
 
-  val notes = notesViewModel.notes.collectAsState().value
+    val notes = notesViewModel.notes.collectAsState().value
+    var isLoggedIn = false
 
-  NavHost(navController = navController, startDestination = "noteScreen") {
-    composable("noteScreen") {
-      NotesScreen(
-          modifier = modifier,
-          onNavigateToAddNote = { navController.navigate("addNoteScreen") },
-          onNavigateToEditNote = { noteId -> navController.navigate("editNote/$noteId") },
-          notesViewModel = notesViewModel,
-      )
-    }
-    composable("addNoteScreen") {
-      AddNoteScreen(
-          navController = navController, modifier = modifier, notesViewModel = notesViewModel)
-    }
-    composable("editNote/{noteId}") { backStackEntry ->
-      val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull()
-      val note = notes.find { it.id == noteId }
+    NavHost(navController = navController, startDestination = "splashScreen") {
+        composable("splashScreen") {
+            SplashScreen(navController)
+        }
+        composable("welcomeScreen") {
+            WelcomeScreen(
+                onGetStartedClick = { navController.navigate("createAccountScreen") },
+                onLoginClick = { navController.navigate("loginScreen") },
+                modifier = modifier
+            )
+        }
+        composable("createAccountScreen") {
+            CreateAccountScreen(modifier = modifier)
+        }
+        composable("loginScreen") {
+            LoginScreen(modifier = modifier)
+        }
+        composable("noteScreen") {
+            NotesScreen(
+                modifier = modifier,
+                onNavigateToAddNote = { navController.navigate("addNoteScreen") },
+                onNavigateToEditNote = { noteId -> navController.navigate("editNote/$noteId") },
+                notesViewModel = notesViewModel,
+            )
+        }
+        composable("addNoteScreen") {
+            AddNoteScreen(
+                navController = navController, modifier = modifier, notesViewModel = notesViewModel
+            )
+        }
+        composable("editNote/{noteId}") { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getString("noteId")?.toIntOrNull()
+            val note = notes.find { it.id == noteId }
 
-      if (note != null) {
-        EditNoteScreen(
-            note = note,
-            notesViewModel = notesViewModel,
-            navController = navController,
-            modifier = modifier,
-        )
-      } else {
-        // case where note is not found
-        print("NO NOTE FOUND")
-      }
+            if (note != null) {
+                EditNoteScreen(
+                    note = note,
+                    notesViewModel = notesViewModel,
+                    navController = navController,
+                    modifier = modifier,
+                )
+            } else {
+                // case where note is not found
+                print("NO NOTE FOUND")
+            }
+        }
     }
-  }
 }

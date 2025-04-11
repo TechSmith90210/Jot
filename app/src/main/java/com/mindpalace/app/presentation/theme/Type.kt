@@ -23,17 +23,53 @@ val Typography = Typography(
         fontSize = 30.sp,
         lineHeight = 36.sp
     ),
+    displayMedium = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 26.sp,
+        lineHeight = 32.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        lineHeight = 28.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Bold,
+        fontSize = 26.sp,
+        lineHeight = 32.sp
+    ),
     headlineMedium = TextStyle(
         fontFamily = Quicksand,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
         lineHeight = 32.sp
     ),
+    headlineSmall = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        lineHeight = 28.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        lineHeight = 28.sp
+    ),
     titleMedium = TextStyle(
         fontFamily = Quicksand,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 28.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = Quicksand,
@@ -47,10 +83,29 @@ val Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp
     ),
-    labelSmall = TextStyle(
+    bodySmall = TextStyle(
         fontFamily = Quicksand,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Light,
         fontSize = 12.sp,
         lineHeight = 16.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = Quicksand,
+        fontWeight = FontWeight.Bold,
+        fontSize = 11.sp,
+        lineHeight = 14.sp
     )
 )
+

@@ -1,21 +1,23 @@
 [versions]
 accompanistNavigationMaterial = "0.36.0" # Optional: consider migrating to official androidx.material.navigation
 agp = "8.9.1"
+coilCompose = "2.4.0"
 coreSplashscreen = "1.0.1"
 hiltAndroidCompiler = "2.56.1"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.1.20"
-coreKtx = "1.15.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.10.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 material = "1.12.0"
 navigationComposeVersion = "2.8.9"
 ksp = "2.1.20-1.0.32"
+remixiconAndroidCompose = "1.0.0"
 roomVersion = "2.6.1"
 
 
@@ -27,6 +29,9 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilCompose" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilCompose" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -45,6 +50,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+remixicon-android-compose = { module = "io.github.augustrush:remixicon-android-compose", version.ref = "remixiconAndroidCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

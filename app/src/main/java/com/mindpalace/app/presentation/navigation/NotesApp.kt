@@ -36,10 +36,10 @@ fun NotesApp(
             )
         }
         composable("createAccountScreen") {
-            CreateAccountScreen(modifier = modifier)
+            CreateAccountScreen(modifier = modifier, navController = navController)
         }
         composable("loginScreen") {
-            LoginScreen(modifier = modifier)
+            LoginScreen(modifier = modifier, navController = navController)
         }
         composable("noteScreen") {
             NotesScreen(

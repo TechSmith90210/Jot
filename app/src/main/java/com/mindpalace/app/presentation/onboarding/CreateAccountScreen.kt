@@ -19,11 +19,16 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,17 +37,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
 import com.mindpalace.app.R
 import com.mindpalace.app.presentation.components.AppTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAccountScreen(modifier: Modifier) {
+fun CreateAccountScreen(
+    modifier: Modifier, navController: NavHostController,
+) {
     var email = remember { mutableStateOf("") }
     var password = remember { mutableStateOf("") }
     var confirmPassword = remember { mutableStateOf("") }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                ),
+                title = {
+                    null
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            containerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = MaterialTheme.colorScheme.onSecondary
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_left_line),
+                            contentDescription = "Back"
+                        )
+                    }
+
+                }
+            )
+        },
         content = { innerPadding ->
             Column(
                 modifier = modifier
@@ -57,8 +93,7 @@ fun CreateAccountScreen(modifier: Modifier) {
                     contentDescription = "Create Account Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 270.dp)
-                        .padding(horizontal = 40.dp)
+                        .heightIn(max = 230.dp)
                 )
                 Surface(
                     modifier = Modifier.fillMaxWidth(),

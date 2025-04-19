@@ -17,8 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.request.ImageRequest
-import kotlinx.coroutines.delay
 import com.mindpalace.app.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen (navController: NavController) {
@@ -40,7 +40,7 @@ fun SplashScreen (navController: NavController) {
                 .decoderFactory(factory = GifDecoder.Factory())
                 .build(),
             contentDescription = "Splash Logo",
-            modifier = Modifier.size(150.dp)
+            modifier = Modifier.size(100.dp)
         )
     }
 }

@@ -1,8 +1,8 @@
-package com.mindpalace.app.presentation.onboarding
+package com.mindpalace.app.presentation.auth.login
 
+import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +13,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,13 +23,19 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,30 +44,68 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mindpalace.app.R
 import com.mindpalace.app.presentation.components.AppTextField
+import com.mindpalace.app.presentation.components.LoadingScreen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier, navController: NavController) {
-    var email = remember { mutableStateOf("") }
-    var password = remember { mutableStateOf("") }
+fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: LoginViewModel) {
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+
+    val loginState by viewModel.loginState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope() // 👉 this!
+
+    // Return Pair<isValid, errorMessage?>
+    fun validateFields(email: String, password: String): Pair<Boolean, String?> {
+        return when {
+            email.isBlank() -> Pair(false, "Email cannot be empty")
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> Pair(false, "Invalid email format")
+            password.isBlank() -> Pair(false, "Password cannot be empty")
+            else -> Pair(true, null)
+        }
+    }
+
+    fun onLoginClick() {
+        val (isValid, errorMessage) = validateFields(email.value, password.value)
+        if (isValid) {
+            viewModel.login(email.value, password.value)
+        } else {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(errorMessage ?: "Unknown error")
+            }
+        }
+    }
+
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> {
+                navController.navigate("homeScreen") {
+                    popUpTo("loginScreen") { inclusive = true }
+                }
+            }
+            is LoginState.Error -> {
+                snackbarHostState.showSnackbar((loginState as LoginState.Error).message)
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
-                title = {
-                    null
-                },
+                title = { /* Empty */ },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
                         colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                            containerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            disabledContentColor = MaterialTheme.colorScheme.onSecondary
+                            contentColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Icon(
@@ -70,11 +113,14 @@ fun LoginScreen(modifier: Modifier, navController: NavController) {
                             contentDescription = "Back"
                         )
                     }
-
                 }
             )
         },
         content = { innerPadding ->
+            if (loginState is LoginState.Loading) {
+                LoadingScreen()
+            }
+
             Column(
                 modifier = modifier
                     .padding(innerPadding)
@@ -85,38 +131,36 @@ fun LoginScreen(modifier: Modifier, navController: NavController) {
             ) {
                 Image(
                     painter = painterResource(R.drawable.login_image),
-                    contentDescription = "Create Account Image",
+                    contentDescription = "Login Image",
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 230.dp)
                 )
+
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(
-                        1.dp, MaterialTheme.colorScheme.outline,
-                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     color = MaterialTheme.colorScheme.surface,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
-                        modifier = modifier.padding(25.dp),
+                        modifier = Modifier.padding(25.dp),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             "Welcome Back!",
                             color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineMedium
                         )
-                        Spacer(modifier = Modifier.height(10.dp)) // vertical space
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            "Continue Your Jot Journey.",
+                            "Continue Building Your MindPalace.",
                             color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyMedium
                         )
-                        Spacer(modifier = Modifier.height(25.dp)) // vertical space
+                        Spacer(modifier = Modifier.height(25.dp))
 
-                        // email text field
                         AppTextField(
                             value = email.value,
                             onValueChange = { email.value = it },
@@ -124,27 +168,22 @@ fun LoginScreen(modifier: Modifier, navController: NavController) {
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp)) // vertical space
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                        // password text field
                         AppTextField(
                             value = password.value,
                             onValueChange = { password.value = it },
                             label = "Password",
-                            modifier = Modifier.fillMaxWidth(),
-                            isPassword = true
+                            isPassword = true,
+                            modifier = Modifier.fillMaxWidth()
                         )
 
-                        Spacer(modifier = Modifier.height(25.dp)) // vertical space
+                        Spacer(modifier = Modifier.height(25.dp))
 
                         Button(
-                            onClick = ({ }), colors = ButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                                disabledContainerColor = MaterialTheme.colorScheme.outlineVariant,
-                                disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                            onClick = { onLoginClick() },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = loginState !is LoginState.Loading
                         ) {
                             Text("Login", style = MaterialTheme.typography.labelLarge)
                         }
@@ -152,40 +191,22 @@ fun LoginScreen(modifier: Modifier, navController: NavController) {
                         Spacer(modifier = Modifier.height(15.dp))
 
                         OutlinedButton(
-                            onClick = ({}), colors = ButtonColors(
-                                containerColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-                                contentColor = if (isSystemInDarkTheme()) Color(0xffFFFFFF) else Color(
-                                    0xff3C4043
-                                ),
-                                disabledContainerColor = MaterialTheme.colorScheme.outlineVariant,
-                                disabledContentColor = MaterialTheme.colorScheme.onSecondary
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                            border = BorderStroke(
-                                1.dp,
-                                if (isSystemInDarkTheme()) Color(0xFF5F6368) else Color(0xFFDADCE0)
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                            onClick = { /* TODO: Google Sign In */ },
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.google_icon_logo), // official "G" icon
+                                painter = painterResource(id = R.drawable.google_icon_logo),
                                 contentDescription = "Google Sign-In",
                                 modifier = Modifier
                                     .size(25.dp)
                                     .padding(end = 12.dp),
                                 tint = Color.Unspecified
                             )
-                            Text(
-                                text = "Continue with Google",
-                                style = MaterialTheme.typography.labelLarge
-                            )
+                            Text("Continue with Google", style = MaterialTheme.typography.labelLarge)
                         }
-
                     }
                 }
             }
         }
-
-
     )
 }

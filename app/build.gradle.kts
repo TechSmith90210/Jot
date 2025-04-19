@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt") // For Hilt
     id("com.google.devtools.ksp") // For Room
     id("com.google.dagger.hilt.android") // Hilt plugin
+    kotlin("plugin.serialization") version "2.1.20"
 }
 
 android {
@@ -96,4 +97,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //supabase
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.ktor:ktor-client-android:3.1.2")
 }

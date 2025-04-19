@@ -36,8 +36,7 @@ fun WelcomeScreen(modifier: Modifier, onGetStartedClick: () -> Unit, onLoginClic
             // Main screen content
             Column(
                 modifier = modifier
-                    .padding(padding)
-                    .padding(bottom = 10.dp),
+                    .padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {

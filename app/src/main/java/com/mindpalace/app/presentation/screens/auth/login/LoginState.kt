@@ -1,4 +1,4 @@
-package com.mindpalace.app.presentation.auth.login
+package com.mindpalace.app.presentation.screens.auth.login
 
 sealed class LoginState {
     object Idle : LoginState()

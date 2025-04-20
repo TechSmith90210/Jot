@@ -1,4 +1,4 @@
-package com.mindpalace.app.presentation.auth.signUp
+package com.mindpalace.app.presentation.screens.auth.signUp
 
 sealed class SignupState {
     object Idle : SignupState()

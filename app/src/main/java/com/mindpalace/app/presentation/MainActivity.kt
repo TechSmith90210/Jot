@@ -8,12 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.navigation.MindNavigator
 import com.mindpalace.app.presentation.theme.MindPalaceTheme
 import dagger.hilt.android.AndroidEntryPoint
-
-val supabase = SupabaseClient.client
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

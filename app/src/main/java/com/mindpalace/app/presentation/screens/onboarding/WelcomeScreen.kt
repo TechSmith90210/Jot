@@ -1,4 +1,4 @@
-package com.mindpalace.app.presentation.onboarding
+package com.mindpalace.app.presentation.screens.onboarding
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +54,7 @@ fun WelcomeScreen(modifier: Modifier, onGetStartedClick: () -> Unit, onLoginClic
                         1.dp, MaterialTheme.colorScheme.outline,
                     ),
                     color = MaterialTheme.colorScheme.surface,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
                         modifier = modifier.padding(30.dp),

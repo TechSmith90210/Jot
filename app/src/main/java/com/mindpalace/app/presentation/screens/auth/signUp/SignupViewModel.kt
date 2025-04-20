@@ -1,4 +1,4 @@
-package com.mindpalace.app.presentation.auth.signUp
+package com.mindpalace.app.presentation.screens.auth.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

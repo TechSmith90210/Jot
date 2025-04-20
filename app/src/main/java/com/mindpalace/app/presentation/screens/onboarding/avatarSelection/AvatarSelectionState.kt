@@ -1,4 +1,4 @@
-package com.mindpalace.app.presentation.onboarding.avatarSelection
+package com.mindpalace.app.presentation.screens.onboarding.avatarSelection
 
 sealed class AvatarSelectionState {
     object Idle : AvatarSelectionState()

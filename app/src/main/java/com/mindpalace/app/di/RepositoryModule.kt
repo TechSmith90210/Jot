@@ -25,6 +25,6 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideUserRepository(supabaseClient: SupabaseClient): UserRepository {
-        return UserRepositoryImpl()
+        return UserRepositoryImpl(supabaseClient)
     }
 }

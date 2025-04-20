@@ -6,15 +6,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.mindpalace.app.presentation.HomeScreen
-import com.mindpalace.app.presentation.auth.login.LoginScreen
-import com.mindpalace.app.presentation.auth.login.LoginViewModel
-import com.mindpalace.app.presentation.auth.signUp.SignUpScreen
-import com.mindpalace.app.presentation.auth.signUp.SignupViewModel
-import com.mindpalace.app.presentation.onboarding.SplashScreen
-import com.mindpalace.app.presentation.onboarding.WelcomeScreen
-import com.mindpalace.app.presentation.onboarding.avatarSelection.AvatarSelectionViewModel
-import com.mindpalace.app.presentation.onboarding.avatarSelection.AvatarSelectorScreen
+import com.mindpalace.app.presentation.screens.auth.login.LoginScreen
+import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
+import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
+import com.mindpalace.app.presentation.screens.auth.signUp.SignupViewModel
+import com.mindpalace.app.presentation.screens.onboarding.WelcomeScreen
+import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectionViewModel
+import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectorScreen
+import com.mindpalace.app.presentation.screens.onboarding.splash.SplashScreen
+import com.mindpalace.app.presentation.screens.onboarding.splash.SplashViewModel
+import com.mindpalace.app.presentation.screens.root.RootScreen
 
 @Composable
 fun MindNavigator(
@@ -22,10 +23,25 @@ fun MindNavigator(
 ) {
 
     NavHost(navController = navController, startDestination = "splashScreen") {
-
         // splash screen nav
         composable("splashScreen") {
-            SplashScreen(navController)
+            val splashViewModel: SplashViewModel = hiltViewModel()
+
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate("welcomeScreen") {
+                        popUpTo("splashScreen") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate("rootScreen") {
+                        popUpTo("splashScreen") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                viewModel = splashViewModel
+            )
         }
 
         //onboarding screens
@@ -38,23 +54,37 @@ fun MindNavigator(
         }
         composable("createAccountScreen") {
             val signupViewModel: SignupViewModel = hiltViewModel()
-            SignUpScreen(modifier = modifier, navController = navController, viewModel = signupViewModel)
+            SignUpScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = signupViewModel
+            )
         }
         composable("loginScreen") {
             val loginViewModel: LoginViewModel = hiltViewModel()
             LoginScreen(
                 modifier = modifier,
                 navController = navController,
-                viewModel = loginViewModel)
+                viewModel = loginViewModel,
+                onNavigateToHome = {
+                    navController.navigate("rootScreen") {
+                        popUpTo("loginScreen") { inclusive = true }
+                    }
+                }
+            )
         }
-        composable("avatarSelectorScreen"){
-        val avatarSelectionViewModel : AvatarSelectionViewModel = hiltViewModel()
-            AvatarSelectorScreen(modifier = modifier, navController = navController, viewModel = avatarSelectionViewModel)
+        composable("avatarSelectorScreen") {
+            val avatarSelectionViewModel: AvatarSelectionViewModel = hiltViewModel()
+            AvatarSelectorScreen(
+                modifier = modifier,
+                navController = navController,
+                viewModel = avatarSelectionViewModel
+            )
         }
 
         // main screens
-        composable("homeScreen") {
-            HomeScreen(modifier = modifier)
+        composable("rootScreen") {
+            RootScreen(modifier = modifier)
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.mindpalace.app.presentation.auth.login
+package com.mindpalace.app.presentation.screens.auth.signUp
 
-import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,72 +36,76 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.mindpalace.app.R
 import com.mindpalace.app.presentation.components.AppTextField
 import com.mindpalace.app.presentation.components.LoadingScreen
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: LoginViewModel) {
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+fun SignUpScreen(
+    modifier: Modifier,
+    navController: NavHostController,
+    viewModel: SignupViewModel = hiltViewModel()
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
-    val loginState by viewModel.loginState.collectAsState()
+    val signUpState by viewModel.signupState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope() // 👉 this!
 
-    // Return Pair<isValid, errorMessage?>
-    fun validateFields(email: String, password: String): Pair<Boolean, String?> {
-        return when {
-            email.isBlank() -> Pair(false, "Email cannot be empty")
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> Pair(false, "Invalid email format")
-            password.isBlank() -> Pair(false, "Password cannot be empty")
-            else -> Pair(true, null)
-        }
-    }
-
-    fun onLoginClick() {
-        val (isValid, errorMessage) = validateFields(email.value, password.value)
-        if (isValid) {
-            viewModel.login(email.value, password.value)
-        } else {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(errorMessage ?: "Unknown error")
+    fun onSignUpClick(email: String, password: String, confirmPassword: String) {
+        when {
+            email.isEmpty() -> {
+                errorMessage = "Please enter your email address."
+            }
+            password.isEmpty() -> {
+                errorMessage = "Please enter your password."
+            }
+            confirmPassword.isEmpty() -> {
+                errorMessage = "Please confirm your password."
+            }
+            password != confirmPassword -> {
+                errorMessage = "Passwords do not match."
+            }
+            else -> {
+                viewModel.signUp(email, password)
+                errorMessage = ""
             }
         }
     }
 
-
-    LaunchedEffect(loginState) {
-        when (loginState) {
-            is LoginState.Success -> {
-                navController.navigate("homeScreen") {
-                    popUpTo("loginScreen") { inclusive = true }
+    // Handle sign-up states
+    LaunchedEffect(signUpState) {
+        when (signUpState) {
+            is SignupState.Success -> {
+                navController.navigate("avatarSelectorScreen") {
+                    popUpTo("signUpScreen") { inclusive = true }
                 }
             }
-            is LoginState.Error -> {
-                snackbarHostState.showSnackbar((loginState as LoginState.Error).message)
+            is SignupState.Error -> {
+                snackbarHostState.showSnackbar((signUpState as SignupState.Error).message)
             }
-            else -> {}
+            else -> Unit
         }
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
-                title = { /* Empty */ },
+                title = {},
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
@@ -116,11 +121,11 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
                 }
             )
         },
-        content = { innerPadding ->
-            if (loginState is LoginState.Loading) {
-                LoadingScreen()
-            }
-
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        if (signUpState is SignupState.Loading) {
+            LoadingScreen()
+        } else {
             Column(
                 modifier = modifier
                     .padding(innerPadding)
@@ -130,8 +135,8 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
                 verticalArrangement = Arrangement.Bottom
             ) {
                 Image(
-                    painter = painterResource(R.drawable.login_image),
-                    contentDescription = "Login Image",
+                    painter = painterResource(R.drawable.register_image),
+                    contentDescription = "Create Account Image",
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 230.dp)
@@ -149,50 +154,69 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Welcome Back!",
+                            "Create Account",
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineMedium
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            "Continue Building Your MindPalace.",
+                            "Enter details and begin your MindPalace journey!",
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Spacer(modifier = Modifier.height(25.dp))
 
                         AppTextField(
-                            value = email.value,
-                            onValueChange = { email.value = it },
+                            value = email,
+                            onValueChange = { email = it },
                             label = "Email",
                             modifier = Modifier.fillMaxWidth()
                         )
-
                         Spacer(modifier = Modifier.height(12.dp))
 
                         AppTextField(
-                            value = password.value,
-                            onValueChange = { password.value = it },
+                            value = password,
+                            onValueChange = { password = it },
                             label = "Password",
                             isPassword = true,
                             modifier = Modifier.fillMaxWidth()
                         )
+                        Spacer(modifier = Modifier.height(12.dp))
 
+                        AppTextField(
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            label = "Confirm Password",
+                            isPassword = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                         Spacer(modifier = Modifier.height(25.dp))
 
                         Button(
-                            onClick = { onLoginClick() },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = loginState !is LoginState.Loading
+                            onClick = { onSignUpClick(email, password, confirmPassword) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Login", style = MaterialTheme.typography.labelLarge)
+                            Text("Sign Up", style = MaterialTheme.typography.labelLarge)
                         }
 
                         Spacer(modifier = Modifier.height(15.dp))
 
                         OutlinedButton(
-                            onClick = { /* TODO: Google Sign In */ },
-                            modifier = Modifier.fillMaxWidth()
+                            onClick = { /* TODO: Google Sign-In */ },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+                                contentColor = if (isSystemInDarkTheme()) Color.White else Color(0xff3C4043)
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isSystemInDarkTheme()) Color(0xFF5F6368) else Color(0xFFDADCE0)
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.google_icon_logo),
@@ -206,7 +230,14 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
                         }
                     }
                 }
+
+                if (errorMessage.isNotEmpty()) {
+                    LaunchedEffect(errorMessage) {
+                        snackbarHostState.showSnackbar(errorMessage)
+                        errorMessage = ""
+                    }
+                }
             }
         }
-    )
+    }
 }

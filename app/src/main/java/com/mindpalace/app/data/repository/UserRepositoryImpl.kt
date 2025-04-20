@@ -6,9 +6,9 @@ import io.github.jan.supabase.auth.auth
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-class UserRepositoryImpl : UserRepository {
+class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepository {
     override suspend fun updateUserAvatarId(avatarId: String) {
-        SupabaseClient.client.auth.updateUser {
+        supabaseClient.client.auth.updateUser {
             data = buildJsonObject {
                 put("avatar_id", JsonPrimitive(avatarId))
             }

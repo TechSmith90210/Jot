@@ -70,6 +70,11 @@ fun MindNavigator(
                     navController.navigate("rootScreen") {
                         popUpTo("loginScreen") { inclusive = true }
                     }
+                },
+                onNavigateToOnboarding =  {
+                    navController.navigate("avatarSelectorScreen") {
+                        popUpTo("loginScreen") { inclusive = true }
+                    }
                 }
             )
         }

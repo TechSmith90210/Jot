@@ -1,6 +1,6 @@
 [versions]
 accompanistNavigationMaterial = "0.36.0" # Optional: consider migrating to official androidx.material.navigation
-agp = "8.9.1"
+agp = "8.9.2"
 coilCompose = "2.4.0"
 coreSplashscreen = "1.0.1"
 hiltAndroidCompiler = "2.56.1"
@@ -13,12 +13,12 @@ espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.10.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.04.00"
+composeBom = "2025.04.01"
 material = "1.12.0"
 navigationComposeVersion = "2.8.9"
 ksp = "2.1.20-1.0.32"
 remixiconAndroidCompose = "1.0.0"
-roomVersion = "2.7.0"
+roomVersion = "2.7.1"
 
 
 [libraries]

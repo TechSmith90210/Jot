@@ -1,7 +1,9 @@
 package com.mindpalace.app.presentation.screens.auth.signUp
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mindpalace.app.domain.usecase.GoogleSignInUseCase
 import com.mindpalace.app.domain.usecase.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignupViewModel @Inject constructor(private val signUpUseCase: SignUpUseCase) : ViewModel() {
+class SignupViewModel @Inject constructor(
+    private val signUpUseCase: SignUpUseCase,
+    private val GoogleSignInCase: GoogleSignInUseCase
+) : ViewModel() {
     private val _signupState = MutableStateFlow<SignupState>(SignupState.Idle)
     val signupState: StateFlow<SignupState> = _signupState
 
@@ -37,4 +42,23 @@ class SignupViewModel @Inject constructor(private val signUpUseCase: SignUpUseCa
             )
         }
     }
+
+    fun signInWithGoogle(context: Context) {
+        viewModelScope.launch {
+            _signupState.value = SignupState.Loading
+
+            val result = GoogleSignInCase.invoke(context)
+
+            result.fold(
+                onSuccess = {
+                    _signupState.value = SignupState.Success
+                },
+                onFailure = { error ->
+                    val errorMessage = error.message ?: "Google Sign-In failed. Please try again."
+                    _signupState.value = SignupState.Error(message = errorMessage)
+                }
+            )
+        }
+    }
+
 }

@@ -19,6 +19,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"1043774326073-r2cbs1seq0nkehb76s9jvbnsam8guom3.apps.googleusercontent.com\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -43,6 +45,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -102,4 +105,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.ktor:ktor-client-android:3.1.2")
+
+    //google auth with supabase
+    implementation ("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
 }

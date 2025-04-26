@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MindPalace</string>
+    <string name="app_name">Mind Palace</string>
     <string name = "placeholder_body">Lorem ipsum dolor sit amet</string>
 </resources>

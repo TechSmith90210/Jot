@@ -5,4 +5,5 @@ data class User(
     val email: String,
     val avatarId: String,
     val createdAt: String,
+    val lastSignInAt : String
 )

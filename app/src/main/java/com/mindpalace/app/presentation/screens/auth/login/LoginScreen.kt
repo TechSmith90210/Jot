@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -49,7 +50,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: LoginViewModel, onNavigateToHome : () -> Unit) {
+fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: LoginViewModel, onNavigateToHome : () -> Unit, onNavigateToOnboarding : () -> Unit) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -87,9 +88,14 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
             is LoginState.Error -> {
                 snackbarHostState.showSnackbar((loginState as LoginState.Error).message)
             }
+            is LoginState.OnBoard -> {
+                onNavigateToOnboarding()
+            }
             else -> {}
         }
     }
+
+    val context = LocalContext.current
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -189,7 +195,7 @@ fun LoginScreen(modifier: Modifier, navController: NavController, viewModel: Log
                         Spacer(modifier = Modifier.height(15.dp))
 
                         OutlinedButton(
-                            onClick = { /* TODO: Google Sign In */ },
+                            onClick = { viewModel.loginWithGoogle(context = context) },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(

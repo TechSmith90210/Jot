@@ -21,7 +21,8 @@ class UpdateUserAvatarUseCase(private val userRepository: UserRepository  ) {
                     id = user.id,
                     email = user.email ?: "",
                     createdAt = (user.createdAt ?: "").toString(),
-                    avatarId = avatarId  // Use the updated avatarId
+                    avatarId = avatarId,
+                    lastSignInAt = (user.lastSignInAt ?: "").toString()
                 )
 
                 Result.success(updatedUser)

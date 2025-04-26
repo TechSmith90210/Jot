@@ -51,7 +51,7 @@ fun AvatarSelectorScreen(
 
     when (avatarSelectionState) {
         is AvatarSelectionState.Success -> {
-            navController.navigate("homeScreen")
+            navController.navigate("rootScreen")
         }
 
         is AvatarSelectionState.Loading -> {

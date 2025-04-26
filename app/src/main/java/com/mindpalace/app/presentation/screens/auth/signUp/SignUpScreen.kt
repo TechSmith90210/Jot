@@ -1,5 +1,7 @@
 package com.mindpalace.app.presentation.screens.auth.signUp
 
+import android.content.Context
+import android.credentials.GetCredentialException
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -36,17 +38,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.mindpalace.app.R
+import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.components.AppTextField
 import com.mindpalace.app.presentation.components.LoadingScreen
+import io.github.jan.supabase.auth.auth
+import com.mindpalace.app.BuildConfig
+import io.github.jan.supabase.auth.providers.Google
+import io.github.jan.supabase.auth.providers.builtin.IDToken
+import io.github.jan.supabase.exceptions.RestException
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,15 +87,19 @@ fun SignUpScreen(
             email.isEmpty() -> {
                 errorMessage = "Please enter your email address."
             }
+
             password.isEmpty() -> {
                 errorMessage = "Please enter your password."
             }
+
             confirmPassword.isEmpty() -> {
                 errorMessage = "Please confirm your password."
             }
+
             password != confirmPassword -> {
                 errorMessage = "Passwords do not match."
             }
+
             else -> {
                 viewModel.signUp(email, password)
                 errorMessage = ""
@@ -92,11 +115,18 @@ fun SignUpScreen(
                     popUpTo("signUpScreen") { inclusive = true }
                 }
             }
+
             is SignupState.Error -> {
                 snackbarHostState.showSnackbar((signUpState as SignupState.Error).message)
             }
+
             else -> Unit
         }
+    }
+    val context = LocalContext.current
+
+    fun onGoogleSignInClick() {
+       viewModel.signInWithGoogle(context)
     }
 
     Scaffold(
@@ -206,10 +236,12 @@ fun SignUpScreen(
                         Spacer(modifier = Modifier.height(15.dp))
 
                         OutlinedButton(
-                            onClick = { /* TODO: Google Sign-In */ },
+                            onClick = { onGoogleSignInClick() },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 containerColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-                                contentColor = if (isSystemInDarkTheme()) Color.White else Color(0xff3C4043)
+                                contentColor = if (isSystemInDarkTheme()) Color.White else Color(
+                                    0xff3C4043
+                                )
                             ),
                             modifier = Modifier.fillMaxWidth(),
                             border = BorderStroke(
@@ -226,7 +258,10 @@ fun SignUpScreen(
                                     .padding(end = 12.dp),
                                 tint = Color.Unspecified
                             )
-                            Text("Continue with Google", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                "Continue with Google",
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                     }
                 }

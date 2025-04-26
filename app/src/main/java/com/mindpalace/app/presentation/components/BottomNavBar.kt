@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -16,6 +18,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -33,9 +36,7 @@ fun BottomNavBar(navController: NavController, onCenterButtonClick: () -> Unit =
             .border(
                 1.dp,
                 MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.32f),
-            )
-            .padding(top = 1.dp),
-
+            ),
         tonalElevation = 4.dp
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -69,22 +70,30 @@ fun BottomNavBar(navController: NavController, onCenterButtonClick: () -> Unit =
             )
         }
 
-        // Center Plus Button
-        FloatingActionButton(
-            onClick = onCenterButtonClick,
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier
-                .height(35.dp)
-                .width(50.dp)
-                .padding(horizontal = 7.dp),
-            shape = CircleShape,
-            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.add_fill), contentDescription = "Add"
+        // Center Plus Button as NavigationBarItem
+        NavigationBarItem(
+            selected = false, onClick = onCenterButtonClick, icon = {
+                FloatingActionButton(
+                    onClick = onCenterButtonClick,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .height(56.dp)
+                        .width(56.dp)
+                        .padding(10.dp),
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add_fill),
+                        contentDescription = "Add"
+                    )
+                }
+            }, colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent
             )
-        }
+        )
+
 
         bottomNavItems.drop(2).forEach { item ->
             val selected = currentDestination == item.route
@@ -109,7 +118,7 @@ fun BottomNavBar(navController: NavController, onCenterButtonClick: () -> Unit =
                 unselectedIconColor = MaterialTheme.colorScheme.onSurface,
                 selectedTextColor = MaterialTheme.colorScheme.primary,
                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    indicatorColor = Color.Transparent
+                indicatorColor = Color.Transparent
             )
             )
         }
@@ -117,12 +126,12 @@ fun BottomNavBar(navController: NavController, onCenterButtonClick: () -> Unit =
 }
 
 
-val bottomNavItems = listOf(
+val bottomNavItems = listOf<BottomNavItem>(
     BottomNavItem(
         title = "Home",
         route = "home_screen",
-        unselectedIcon = R.drawable.folders_line,
-        selectedIcon = R.drawable.folders_fill
+        unselectedIcon = R.drawable.home_line,
+        selectedIcon = R.drawable.home_fill
     ), BottomNavItem(
         title = "Search",
         route = "search_screen",
@@ -131,8 +140,8 @@ val bottomNavItems = listOf(
     ), BottomNavItem(
         title = "Blogs",
         route = "blogs_screen",
-        unselectedIcon = R.drawable.book_shelf_line,
-        selectedIcon = R.drawable.book_shelf_fill
+        unselectedIcon = R.drawable.book_open_line,
+        selectedIcon = R.drawable.book_open_fill
     ), BottomNavItem(
         title = "Settings",
         route = "settings_screen",

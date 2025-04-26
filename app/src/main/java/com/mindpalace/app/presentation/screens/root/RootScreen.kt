@@ -32,7 +32,7 @@ fun RootScreen(modifier: Modifier = Modifier) {
         )
         {
             composable("home_screen") {
-                HomeScreen(modifier)
+                HomeScreen()
             }
             composable("search_screen") {
                 SearchScreen(modifier)

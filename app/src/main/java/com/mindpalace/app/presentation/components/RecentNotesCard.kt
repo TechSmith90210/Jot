@@ -48,12 +48,12 @@ fun RecentNotesCard(
                 Icon(
                     painter = painterResource(id = R.drawable.file_text_line),
                     contentDescription = "file icon",
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     maxLines = 1,
                     overflow= TextOverflow.Ellipsis
                 )

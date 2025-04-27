@@ -38,7 +38,8 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                     email = it.email ?: "",
                     avatarId = it.userMetadata?.get("avatar_id") as? String ?: "",
                     createdAt = it.createdAt.toString(),
-                    lastSignInAt = it.lastSignInAt.toString()
+                    lastSignInAt = it.lastSignInAt.toString(),
+                    displayName = it.userMetadata?.get("display_name") as? String ?: "",
                 )
             }
 
@@ -69,7 +70,8 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                     email = it.email ?: "",
                     avatarId = "",
                     createdAt = it.createdAt.toString(),
-                    lastSignInAt = it.lastSignInAt.toString()
+                    lastSignInAt = it.lastSignInAt.toString(),
+                    displayName = it.userMetadata?.get("display_name") as? String ?: "",
                 )
             }
 
@@ -120,7 +122,8 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                             email = it.email ?: "",
                             avatarId = "",
                             createdAt = it.createdAt.toString(),
-                            lastSignInAt = it.lastSignInAt.toString()
+                            lastSignInAt = it.lastSignInAt.toString(),
+                            displayName = it.userMetadata?.get("display_name") as? String ?: "",
                         )
                     )
                 } ?: Result.failure(Exception("User is null"))
@@ -129,6 +132,10 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                 Result.failure(e)
             }
         }
+    }
+
+    override suspend fun getCurrentUser(): User? {
+        TODO("Not yet implemented")
     }
 
 }

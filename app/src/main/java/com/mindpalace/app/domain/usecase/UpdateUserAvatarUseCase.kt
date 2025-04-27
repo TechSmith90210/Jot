@@ -22,7 +22,8 @@ class UpdateUserAvatarUseCase(private val userRepository: UserRepository  ) {
                     email = user.email ?: "",
                     createdAt = (user.createdAt ?: "").toString(),
                     avatarId = avatarId,
-                    lastSignInAt = (user.lastSignInAt ?: "").toString()
+                    lastSignInAt = (user.lastSignInAt ?: "").toString(),
+                    displayName = user.userMetadata?.get("display_name") as? String ?: "",
                 )
 
                 Result.success(updatedUser)

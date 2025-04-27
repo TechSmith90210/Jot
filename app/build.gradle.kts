@@ -105,6 +105,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.ktor:ktor-client-android:3.1.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
+    implementation("io.ktor:ktor-client-cio:3.1.2")   // CIO engine for HTTP requests
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.2") // For JSON serialization
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4") // For JSON parsing
 
     //google auth with supabase
     implementation ("androidx.credentials:credentials:1.5.0")

@@ -1,6 +1,7 @@
 package com.mindpalace.app.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,8 @@ fun PageListItem(title: String) {
             .fillMaxWidth()
             .height(70.dp)
             .padding(10.dp)
-            .clip(shape = RoundedCornerShape(1.dp)),
+            .clip(shape = RoundedCornerShape(1.dp))
+            .clickable {},
         border = BorderStroke(
             1.dp,
             MaterialTheme.colorScheme.outline

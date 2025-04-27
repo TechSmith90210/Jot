@@ -1,6 +1,5 @@
 package com.mindpalace.app.presentation.screens.root
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mindpalace.app.presentation.components.BottomNavBar
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
+import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
 
@@ -29,8 +29,7 @@ fun RootScreen(modifier: Modifier = Modifier) {
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-        )
-        {
+        ) {
             composable("home_screen") {
                 HomeScreen()
             }
@@ -41,7 +40,12 @@ fun RootScreen(modifier: Modifier = Modifier) {
                 BlogScreen(modifier)
             }
             composable("settings_screen") {
-                SettingsScreen(modifier)
+                SettingsScreen(modifier, onNavigateBack = {
+                    bottomNavController.navigate("profile_screen")
+                })
+            }
+            composable("profile_screen") {
+                ProfileScreen(onNavigateToSettings = { bottomNavController.navigate("settings_screen") })
             }
         }
     })

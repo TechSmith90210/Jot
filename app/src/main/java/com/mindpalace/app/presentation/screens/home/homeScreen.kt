@@ -50,7 +50,7 @@ fun HomeScreen() {
                             Icon(
                                 painter = painterResource(id = R.drawable.upload_cloud_line),
                                 contentDescription = "upload status",
-                                tint = MaterialTheme.colorScheme.tertiary
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                         }
                     )
@@ -155,6 +155,7 @@ fun HomeScreen() {
                                 content = {
                                     titles.forEachIndexed { index, title ->
                                         ListItem(
+                                            modifier = Modifier.clickable {},
                                             headlineContent = {
                                                 Text(
                                                     title,
@@ -192,6 +193,7 @@ fun HomeScreen() {
                                         }
                                         if (index == titles.lastIndex) {
                                             ListItem(
+                                                modifier = Modifier.clickable {},
                                                 leadingContent = {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.more_line),

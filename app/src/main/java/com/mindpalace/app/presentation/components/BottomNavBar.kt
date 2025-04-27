@@ -143,10 +143,10 @@ val bottomNavItems = listOf<BottomNavItem>(
         unselectedIcon = R.drawable.book_open_line,
         selectedIcon = R.drawable.book_open_fill
     ), BottomNavItem(
-        title = "Settings",
-        route = "settings_screen",
-        unselectedIcon = R.drawable.settings_2_line,
-        selectedIcon = R.drawable.settings_2_fill
+        title = "Profile",
+        route = "profile_screen",
+        unselectedIcon = R.drawable.account_circle_line,
+        selectedIcon = R.drawable.account_circle_fill
     )
 )
 

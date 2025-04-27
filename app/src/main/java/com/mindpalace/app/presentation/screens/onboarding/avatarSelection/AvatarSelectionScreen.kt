@@ -49,6 +49,7 @@ fun AvatarSelectorScreen(
         viewModel.updateAvatar(avatarId)
     }
 
+
     when (avatarSelectionState) {
         is AvatarSelectionState.Success -> {
             navController.navigate("rootScreen")

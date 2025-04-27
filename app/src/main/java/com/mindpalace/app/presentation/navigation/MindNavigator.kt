@@ -10,6 +10,7 @@ import com.mindpalace.app.presentation.screens.auth.login.LoginScreen
 import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
 import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
 import com.mindpalace.app.presentation.screens.auth.signUp.SignupViewModel
+import com.mindpalace.app.presentation.screens.home.HomeScreen
 import com.mindpalace.app.presentation.screens.onboarding.WelcomeScreen
 import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectionViewModel
 import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectorScreen
@@ -90,6 +91,10 @@ fun MindNavigator(
         // main screens
         composable("rootScreen") {
             RootScreen(modifier = modifier)
+        }
+        // ADD THIS
+        composable("homeScreen") {
+            HomeScreen()
         }
     }
 }

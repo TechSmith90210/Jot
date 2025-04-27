@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,7 +21,7 @@ import coil.request.ImageRequest
 import com.mindpalace.app.R
 
 @Composable
-fun SplashScreen (
+fun SplashScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
@@ -28,11 +29,12 @@ fun SplashScreen (
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
     LaunchedEffect(isUserLoggedIn) {
-        when(isUserLoggedIn){
+        when (isUserLoggedIn) {
             true -> onNavigateToHome()
             false -> onNavigateToLogin()
-            else -> {
-
+            null -> {
+                // Optionally, add a delay or a loading screen if session is still loading
+                // You can show a loading indicator here instead of doing nothing
             }
         }
     }
@@ -43,13 +45,19 @@ fun SplashScreen (
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(R.drawable.brain_gif)
-                .decoderFactory(factory = GifDecoder.Factory())
-                .build(),
-            contentDescription = "Splash Logo",
-            modifier = Modifier.size(90.dp)
-        )
+        // If the session state is null, you can show a loading indicator
+        if (isUserLoggedIn == null) {
+            CircularProgressIndicator() // Show a loading indicator while checking session
+        } else {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(R.drawable.brain_gif)
+                    .decoderFactory(factory = GifDecoder.Factory())
+                    .crossfade(true) // Adds crossfade animation while loading
+                    .build(),
+                contentDescription = "Splash Logo",
+                modifier = Modifier.size(90.dp)
+            )
+        }
     }
 }

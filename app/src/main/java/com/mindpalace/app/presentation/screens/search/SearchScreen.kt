@@ -1,5 +1,6 @@
 package com.mindpalace.app.presentation.screens.search
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,7 @@ fun SearchScreen(modifier: Modifier = Modifier) {
                     singleLine = true,
                     shape = RoundedCornerShape(15.dp),
                     modifier = Modifier
-                        .fillMaxWidth().padding(horizontal = 5.dp),
+                        .fillMaxWidth().padding(horizontal = 5.dp).border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp)),
                     textStyle = MaterialTheme.typography.headlineSmall,
                     keyboardActions = KeyboardActions (
                         onDone = {focusManager.clearFocus() },

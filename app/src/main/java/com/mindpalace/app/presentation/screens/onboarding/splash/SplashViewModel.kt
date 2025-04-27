@@ -25,7 +25,6 @@ class SplashViewModel @Inject constructor() : ViewModel() {
             val session = SupabaseClient.client.auth.currentSessionOrNull()
             _isUserLoggedIn.value = session != null
             Log.d("SplashViewModel", "Session exists: ${session != null}")
-
         }
     }
 }

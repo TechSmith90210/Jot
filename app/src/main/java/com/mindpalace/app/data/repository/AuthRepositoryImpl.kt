@@ -135,7 +135,23 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
     }
 
     override suspend fun getCurrentUser(): User? {
-        TODO("Not yet implemented")
+        val query = auth.currentUserOrNull() ?: return null // If no user, return null immediately
+        val rawUserMetaData = query.userMetadata
+
+        val avatarId = rawUserMetaData?.get("avatar_id")?.toString()?.replace("\"", "")?.trim() ?: "Default Avatar"
+        val displayName = rawUserMetaData?.get("display_name")?.toString()?.replace("\"", "")?.trim() ?: "Default User"
+
+        val data = User(
+            id = query.id,
+            email = query.email ?: "",
+            avatarId = avatarId,
+            createdAt = query.createdAt.toString(),
+            lastSignInAt = query.lastSignInAt.toString(),
+            displayName = displayName,
+        )
+        println("real data: $data")
+        return data
     }
+
 
 }

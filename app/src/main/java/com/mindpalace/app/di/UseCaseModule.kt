@@ -2,6 +2,7 @@ package com.mindpalace.app.di
 
 import com.mindpalace.app.domain.repository.AuthRepository
 import com.mindpalace.app.domain.repository.UserRepository
+import com.mindpalace.app.domain.usecase.GetCurrentUserUseCase
 import com.mindpalace.app.domain.usecase.GoogleSignInUseCase
 import com.mindpalace.app.domain.usecase.LoginUseCase
 import com.mindpalace.app.domain.usecase.SignUpUseCase
@@ -37,5 +38,11 @@ object UseCaseModule {
     @Singleton
     fun provideAvatarUpdateUseCase(userRepository: UserRepository): UpdateUserAvatarUseCase {
         return UpdateUserAvatarUseCase(userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentUserUseCase(authRepository: AuthRepository): GetCurrentUserUseCase {
+        return GetCurrentUserUseCase(authRepository)
     }
 }

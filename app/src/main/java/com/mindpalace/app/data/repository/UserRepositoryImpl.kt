@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 
 val client = HttpClient(CIO) {
     install(ContentNegotiation) {
-        json() // Automatically handle JSON
+        json()
     }
 }
 

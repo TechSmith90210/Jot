@@ -22,8 +22,11 @@ class SplashViewModel @Inject constructor() : ViewModel() {
 
     private fun checkUserLoggedIn() {
         viewModelScope.launch {
+            SupabaseClient.client.auth.loadFromStorage()
+
             val session = SupabaseClient.client.auth.currentSessionOrNull()
             _isUserLoggedIn.value = session != null
+
             Log.d("SplashViewModel", "Session exists: ${session != null}")
         }
     }

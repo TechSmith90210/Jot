@@ -93,7 +93,7 @@ fun MindNavigator(
             RootScreen(modifier = modifier)
         }
         // ADD THIS
-        composable("homeScreen") {
+        composable("home_screen") {
             HomeScreen()
         }
     }

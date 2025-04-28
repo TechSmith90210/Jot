@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,6 +13,7 @@ import com.mindpalace.app.presentation.components.BottomNavBar
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileScreen
+import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
 import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
 
@@ -45,7 +47,12 @@ fun RootScreen(modifier: Modifier = Modifier) {
                 })
             }
             composable("profile_screen") {
-                ProfileScreen(onNavigateToSettings = { bottomNavController.navigate("settings_screen") })
+                val viewModel: ProfileViewModel = hiltViewModel()
+                ProfileScreen(
+
+                    onNavigateToSettings = { bottomNavController.navigate("settings_screen") },
+                    profileViewModel = viewModel
+                )
             }
         }
     })

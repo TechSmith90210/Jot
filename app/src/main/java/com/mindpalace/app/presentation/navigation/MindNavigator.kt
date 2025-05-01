@@ -11,6 +11,7 @@ import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
 import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
 import com.mindpalace.app.presentation.screens.auth.signUp.SignupViewModel
 import com.mindpalace.app.presentation.screens.home.HomeScreen
+import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentEditorScreen
 import com.mindpalace.app.presentation.screens.onboarding.WelcomeScreen
 import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectionViewModel
 import com.mindpalace.app.presentation.screens.onboarding.avatarSelection.AvatarSelectorScreen
@@ -95,6 +96,17 @@ fun MindNavigator(
         // ADD THIS
         composable("home_screen") {
             HomeScreen()
+        }
+        composable("mind_fragment_editor/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")
+            id?.let {
+                MindFragmentEditorScreen(id = it, onNavigateBack = {
+                    navController.popBackStack()
+                })
+            } ?: run {
+                // Handle error case where id is missing or invalid
+                navController.popBackStack()
+            }
         }
     }
 }

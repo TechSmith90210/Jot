@@ -1,7 +1,5 @@
 package com.mindpalace.app.presentation.screens.auth.signUp
 
-import android.content.Context
-import android.credentials.GetCredentialException
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -38,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,26 +43,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.mindpalace.app.R
-import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.components.AppTextField
 import com.mindpalace.app.presentation.components.LoadingScreen
-import io.github.jan.supabase.auth.auth
-import com.mindpalace.app.BuildConfig
-import io.github.jan.supabase.auth.providers.Google
-import io.github.jan.supabase.auth.providers.builtin.IDToken
-import io.github.jan.supabase.exceptions.RestException
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import java.security.MessageDigest
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

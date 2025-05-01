@@ -17,6 +17,7 @@ import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
 import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
+import java.util.UUID
 
 @Composable
 fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
@@ -24,7 +25,12 @@ fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
     val bottomNavController = rememberNavController()
 
     Scaffold(bottomBar = {
-        BottomNavBar(bottomNavController)
+        BottomNavBar(bottomNavController, onCenterButtonClick = {
+            val randomId = UUID.randomUUID().toString()
+            navController.navigate(
+                "mind_fragment_editor/$randomId"
+            )
+        })
     }, content = { innerPadding ->
         NavHost(
             navController = bottomNavController,
@@ -43,14 +49,11 @@ fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
                 BlogScreen(modifier)
             }
             composable("settings_screen") {
-                SettingsScreen(
-                    modifier, onNavigateBack = {
-                        bottomNavController.navigate("profile_screen")
-                    },
-                    onSignOutSuccess = {
-                        navController.navigate("splashScreen")
-                    }
-                )
+                SettingsScreen(modifier, onNavigateBack = {
+                    bottomNavController.navigate("profile_screen")
+                }, onSignOutSuccess = {
+                    navController.navigate("splashScreen")
+                })
             }
             composable("profile_screen") {
                 val viewModel: ProfileViewModel = hiltViewModel()

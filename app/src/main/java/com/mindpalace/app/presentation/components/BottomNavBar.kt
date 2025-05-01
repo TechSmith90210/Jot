@@ -69,9 +69,9 @@ fun BottomNavBar(navController: NavController, onCenterButtonClick: () -> Unit =
 
         // Center Plus Button as NavigationBarItem
         NavigationBarItem(
-            selected = false, onClick = onCenterButtonClick, icon = {
+            selected = false, onClick = { }, icon = {
                 FloatingActionButton(
-                    onClick = onCenterButtonClick,
+                    onClick = { onCenterButtonClick ()},
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier

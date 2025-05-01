@@ -12,22 +12,22 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow<ProfileState>(ProfileState.Idle)
-    val state : StateFlow<ProfileState> = _state
+    val state: StateFlow<ProfileState> = _state
 
     fun fetchCurrentUser() {
         viewModelScope.launch {
             _state.value = ProfileState.Loading
 
-            try{
+            try {
                 val user = getCurrentUserUseCase.invoke()
-                if(user!=null){
+                if (user != null) {
                     _state.value = ProfileState.Success(user)
-                }else{
+                } else {
                     _state.value = ProfileState.Error("User not found")
                 }
-            }catch(e: Exception){
+            } catch (e: Exception) {
                 _state.value = ProfileState.Error(e.message ?: "Unknown error")
             }
         }

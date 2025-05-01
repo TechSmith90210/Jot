@@ -3,11 +3,9 @@ package com.mindpalace.app.presentation.screens.auth.login
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.domain.usecase.GoogleSignInUseCase
 import com.mindpalace.app.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.jan.supabase.auth.auth
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +47,7 @@ class LoginViewModel @Inject constructor(
             result.fold(
                 onSuccess = { user ->
                     val createdAt = user.createdAt
-                    val lastSignInAt = user.lastSignInAt
+                    val lastSignInAt = user.lastSignedIn
 
                     val isFirstLogin = kotlin.runCatching {
                         val created = Instant.parse(createdAt).epochSeconds

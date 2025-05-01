@@ -29,7 +29,7 @@ fun MindNavigator(
             val splashViewModel: SplashViewModel = hiltViewModel()
 
             SplashScreen(
-                onNavigateToLogin = {
+                onNavigateToWelcome = {
                     navController.navigate("welcomeScreen") {
                         popUpTo("splashScreen") { inclusive = true }
                         launchSingleTop = true
@@ -90,7 +90,7 @@ fun MindNavigator(
 
         // main screens
         composable("rootScreen") {
-            RootScreen(modifier = modifier)
+            RootScreen(modifier = modifier, navController = navController)
         }
         // ADD THIS
         composable("home_screen") {

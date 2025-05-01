@@ -1,8 +1,10 @@
 package com.mindpalace.app.data.repository
 
 import com.mindpalace.app.core.SupabaseClient
+import com.mindpalace.app.domain.model.User
 import com.mindpalace.app.domain.repository.UserRepository
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.from
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -33,12 +35,17 @@ suspend fun fetchRandomUserName(): String {
 class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepository {
     override suspend fun updateUserAvatarId(avatarId: String) {
         val username = fetchRandomUserName()
+        val uid = supabaseClient.client.auth.currentUserOrNull()?.id
 
-        supabaseClient.client.auth.updateUser {
-            data = buildJsonObject {
-                put("avatar_id", JsonPrimitive(avatarId))
-                put("display_name", JsonPrimitive(username))
+        supabaseClient.client.from("users").update(
+            {
+                User::displayName setTo username
+                User::avatarId setTo avatarId
+            }) {
+            filter {
+                User::id eq uid
             }
         }
+
     }
 }

@@ -4,13 +4,16 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 fun convertTimestampToHumanReadableFormat(timestamp: String): String {
-    // Parse the timestamp to Instant
-    val instant = Instant.parse(timestamp)
-
-    // Define a formatter for a more human-readable format: "Jan 15, 2025"
     val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-        .withZone(ZoneId.systemDefault()) // Use system default timezone
+        .withZone(ZoneId.systemDefault())
 
-    // Format the timestamp
+    val instant = try {
+        Instant.parse(timestamp) // works if it's full ISO-8601
+    } catch (e: Exception) {
+        // Fallback for date-only format like "2025-04-30"
+        val localDate = java.time.LocalDate.parse(timestamp)
+        localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
+    }
+
     return formatter.format(instant)
 }

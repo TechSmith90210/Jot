@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt") // For Hilt
-    id("com.google.devtools.ksp") // For Room
+    id("com.google.devtools.ksp") version "2.1.20-1.0.32"
     id("com.google.dagger.hilt.android") // Hilt plugin
     kotlin("plugin.serialization") version "2.1.20"
 }
@@ -108,7 +108,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
     implementation("io.ktor:ktor-client-cio:3.1.2")   // CIO engine for HTTP requests
     implementation("io.ktor:ktor-client-content-negotiation:3.1.2") // For JSON serialization
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4") // For JSON parsing
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2") // For JSON parsing
 
     //google auth with supabase
     implementation ("androidx.credentials:credentials:1.5.0")

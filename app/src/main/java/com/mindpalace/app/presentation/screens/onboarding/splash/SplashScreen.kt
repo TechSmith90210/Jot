@@ -23,7 +23,7 @@ import com.mindpalace.app.R
 @Composable
 fun SplashScreen(
     onNavigateToHome: () -> Unit,
-    onNavigateToLogin: () -> Unit,
+    onNavigateToWelcome: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
@@ -31,7 +31,7 @@ fun SplashScreen(
     LaunchedEffect(isUserLoggedIn) {
         when (isUserLoggedIn) {
             true -> onNavigateToHome()
-            false -> onNavigateToLogin()
+            false -> onNavigateToWelcome()
             null -> {
                 // Optionally, add a delay or a loading screen if session is still loading
                 // You can show a loading indicator here instead of doing nothing

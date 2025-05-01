@@ -13,6 +13,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.IDToken
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
@@ -21,10 +22,10 @@ import java.util.UUID
 class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
 
     private val auth: Auth = supabaseCli.client.auth
+    private val supcli = supabaseCli.client
 
     override suspend fun login(
-        email: String,
-        password: String
+        email: String, password: String
     ): Result<User> {
         return try {
             auth.signInWith(provider = Email) {
@@ -32,14 +33,24 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                 this.password = password
             }
 
-            val user = auth.currentUserOrNull()?.let {
+            val currentUserId =
+                auth.currentUserOrNull()?.id ?: return Result.failure(Exception("User is null"))
+
+            val query = supcli.from("users").select {
+                filter {
+                    User::id eq currentUserId
+                }
+            }.decodeSingleOrNull<User>()
+
+            val user = query?.let {
                 User(
                     id = it.id,
-                    email = it.email ?: "",
-                    avatarId = it.userMetadata?.get("avatar_id") as? String ?: "",
-                    createdAt = it.createdAt.toString(),
-                    lastSignInAt = it.lastSignInAt.toString(),
-                    displayName = it.userMetadata?.get("display_name") as? String ?: "",
+                    email = it.email,
+                    avatarId = it.avatarId,
+                    createdAt = it.createdAt,
+                    lastSignedIn = it.lastSignedIn,
+                    displayName = it.displayName,
+                    bio = it.bio
                 )
             }
 
@@ -55,8 +66,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
     }
 
     override suspend fun register(
-        email: String,
-        password: String
+        email: String, password: String
     ): Result<User> {
         return try {
             auth.signUpWith(provider = Email) {
@@ -68,20 +78,29 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                 User(
                     id = it.id,
                     email = it.email ?: "",
-                    avatarId = "",
                     createdAt = it.createdAt.toString(),
-                    lastSignInAt = it.lastSignInAt.toString(),
-                    displayName = it.userMetadata?.get("display_name") as? String ?: "",
+                    lastSignedIn = it.lastSignInAt.toString(),
+                    avatarId = "",
+                    displayName = "",
+                    bio = ""
                 )
             }
 
-            if (user != null) {
-                Result.success(user)
+            if (user == null) {
+                return Result.failure(Exception("Registration failed: User is null"))
+            }
+
+            val actualUser =
+                supcli.from("users").insert(user) { select() }.decodeSingleOrNull<User>()
+
+            if (actualUser != null) {
+                Result.success(actualUser)
             } else {
                 Result.failure(Exception("Registration failed: User data is null"))
             }
         } catch (e: Exception) {
             // Provide a more meaningful error message
+            println("error registering user: $e")
             Result.failure(Exception("Registration failed: ${e.message}", e))
         }
     }
@@ -91,19 +110,17 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
             try {
                 val credentialManager = androidx.credentials.CredentialManager.create(context)
                 val rawNonce = UUID.randomUUID().toString()
-                val hashedNonce = MessageDigest.getInstance("SHA-256")
-                    .digest(rawNonce.toByteArray())
-                    .joinToString("") { "%02x".format(it) }
+                val hashedNonce =
+                    MessageDigest.getInstance("SHA-256").digest(rawNonce.toByteArray())
+                        .joinToString("") { "%02x".format(it) }
 
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(BuildConfig.GOOGLE_CLIENT_ID)
-                    .setNonce(hashedNonce)
-                    .build()
+                val googleIdOption =
+                    GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(true)
+                        .setServerClientId(BuildConfig.GOOGLE_CLIENT_ID).setNonce(hashedNonce)
+                        .build()
 
                 val request: GetCredentialRequest = GetCredentialRequest.Builder()
-                    .addCredentialOption(credentialOption = googleIdOption)
-                    .build()
+                    .addCredentialOption(credentialOption = googleIdOption).build()
 
                 val result = credentialManager.getCredential(request = request, context = context)
                 val credential = GoogleIdTokenCredential.createFrom(result.credential.data)
@@ -115,18 +132,26 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                     nonce = rawNonce
                 }
 
-                auth.currentUserOrNull()?.let {
-                    Result.success(
-                        User(
-                            id = it.id,
-                            email = it.email ?: "",
-                            avatarId = "",
-                            createdAt = it.createdAt.toString(),
-                            lastSignInAt = it.lastSignInAt.toString(),
-                            displayName = it.userMetadata?.get("display_name") as? String ?: "",
-                        )
-                    )
-                } ?: Result.failure(Exception("User is null"))
+                val currentUser = auth.currentUserOrNull()
+
+                val user = User(
+                    id = currentUser?.id ?: "",
+                    email = currentUser?.email ?: "",
+                    createdAt = currentUser?.createdAt.toString(),
+                    lastSignedIn = currentUser?.lastSignInAt.toString(),
+                    avatarId = "",
+                    displayName = "",
+                    bio = ""
+                )
+
+                val actualUser =
+                    supcli.from("users").insert(user).decodeSingleOrNull<User>()
+
+                if (actualUser != null) {
+                    Result.success(actualUser)
+                } else {
+                    Result.failure(Exception("Registration failed: User data is null"))
+                }
 
             } catch (e: Exception) {
                 Result.failure(e)
@@ -135,23 +160,26 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
     }
 
     override suspend fun getCurrentUser(): User? {
-        val query = auth.currentUserOrNull() ?: return null // If no user, return null immediately
-        val rawUserMetaData = query.userMetadata
+        val currentUserId = auth.currentUserOrNull()?.id ?: return null
 
-        val avatarId = rawUserMetaData?.get("avatar_id")?.toString()?.replace("\"", "")?.trim() ?: "Default Avatar"
-        val displayName = rawUserMetaData?.get("display_name")?.toString()?.replace("\"", "")?.trim() ?: "Default User"
+        val query = supcli.from("users").select {
+            filter {
+                User::id eq currentUserId
+            }
+        }.decodeSingleOrNull<User>()
 
-        val data = User(
-            id = query.id,
-            email = query.email ?: "",
-            avatarId = avatarId,
-            createdAt = query.createdAt.toString(),
-            lastSignInAt = query.lastSignInAt.toString(),
-            displayName = displayName,
-        )
-        println("real data: $data")
-        return data
+        return query?.let {
+            val data = User(
+                id = it.id,
+                email = it.email,
+                avatarId = it.avatarId,
+                createdAt = it.createdAt,
+                lastSignedIn = it.lastSignedIn,
+                displayName = it.displayName,
+                bio = it.bio
+            )
+            println("user data: $data")
+            data
+        }
     }
-
-
 }

@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,7 +19,7 @@ import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
 
 @Composable
-fun RootScreen(modifier: Modifier = Modifier) {
+fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     val bottomNavController = rememberNavController()
 
@@ -42,14 +43,18 @@ fun RootScreen(modifier: Modifier = Modifier) {
                 BlogScreen(modifier)
             }
             composable("settings_screen") {
-                SettingsScreen(modifier, onNavigateBack = {
-                    bottomNavController.navigate("profile_screen")
-                })
+                SettingsScreen(
+                    modifier, onNavigateBack = {
+                        bottomNavController.navigate("profile_screen")
+                    },
+                    onSignOutSuccess = {
+                        navController.navigate("splashScreen")
+                    }
+                )
             }
             composable("profile_screen") {
                 val viewModel: ProfileViewModel = hiltViewModel()
                 ProfileScreen(
-
                     onNavigateToSettings = { bottomNavController.navigate("settings_screen") },
                     profileViewModel = viewModel
                 )

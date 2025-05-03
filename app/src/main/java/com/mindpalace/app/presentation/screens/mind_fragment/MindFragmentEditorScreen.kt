@@ -1,8 +1,8 @@
 package com.mindpalace.app.presentation.screens.mind_fragment
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,9 +45,7 @@ data class RichTextBlock(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
-
     val blocks = remember { mutableStateListOf<RichTextBlock>().apply { add(RichTextBlock()) } }
     val blockStates = remember { mutableStateMapOf<String, RichTextState>() }
     val focusRequesters = remember { mutableStateMapOf<String, FocusRequester>() }
@@ -63,7 +61,7 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                         style = MaterialTheme.typography.labelLarge,
                     )
                 },
-                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
@@ -78,9 +76,7 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {}
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_line),
                             contentDescription = "more",
@@ -91,115 +87,96 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
             )
         },
         content = { padding ->
-            Column(
+            LazyColumn(
+                state = rememberLazyListState(),
                 modifier = Modifier
                     .padding(padding)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Title Field
-                BasicTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    textStyle = MaterialTheme.typography.headlineLarge.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        letterSpacing = 1.sp
-                    ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    singleLine = true,
-                    decorationBox = { innerTextField ->
-                        if (title.isEmpty()) {
-                            Text(
-                                text = "Title...",
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                            )
-                        }
-                        innerTextField()
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                LazyColumn(
-                    state = rememberLazyListState()
-                ) {
-                    itemsIndexed(
-                        items = blocks,
-                        key = { _, block -> block.id }
-                    ) { index, block ->
-                        val blockState = blockStates.getOrPut(block.id) { rememberRichTextState() }
-                        val focusRequester = focusRequesters.getOrPut(block.id) { FocusRequester() }
-
-                        LaunchedEffect(focusBlockId) {
-                            if (focusBlockId == block.id) {
-                                focusRequester.requestFocus()
+                item {
+                    BasicTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        textStyle = MaterialTheme.typography.headlineLarge.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            letterSpacing = 1.sp
+                        ),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                        singleLine = true,
+                        decorationBox = { innerTextField ->
+                            if (title.isEmpty()) {
+                                Text(
+                                    text = "Title...",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
                             }
+                            innerTextField()
                         }
-
-                        BlockComponent(
-                            richTextState = blockState,
-                            onNormalInsert = {
-                                val newBlock = RichTextBlock()
-                                blocks.add(index + 1, newBlock)
-                                focusBlockId = newBlock.id
-                            },
-                            onDeleteBlock = {
-                                if (blocks.size > 1) {
-                                    blocks.removeAt(index)
-                                    focusBlockId = when {
-                                        index > 0 -> blocks[index - 1].id
-                                        blocks.isNotEmpty() -> blocks[0].id
-                                        else -> null
-                                    }
-                                }
-                            },
-                            focusRequester = focusRequester,
-                            onFocused = {
-                                focusBlockId = block.id
-                            },
-
-                            )
-                    }
+                    )
                 }
 
-//                // Button to add a new block at the end
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 16.dp)
-//                        .clickable(
-//                            indication = null,
-//                            interactionSource = remember { MutableInteractionSource() }
-//                        ) {
-//                            val newBlock = RichTextBlock()
-//                            blocks.add(newBlock)
-//                            focusBlockId = newBlock.id
-//                        }
-//                ) {
-//                    Text("Add New Block", style = MaterialTheme.typography.bodyMedium, color  = MaterialTheme.colorScheme.secondary)
-//                }
+                item {
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+
+                itemsIndexed(
+                    items = blocks,
+                    key = { _, block -> block.id }
+                ) { index, block ->
+                    val blockState = blockStates.getOrPut(block.id) { rememberRichTextState() }
+                    val focusRequester = focusRequesters.getOrPut(block.id) { FocusRequester() }
+
+                    LaunchedEffect(focusBlockId) {
+                        if (focusBlockId == block.id) {
+                            focusRequester.requestFocus()
+                        }
+                    }
+
+                    BlockComponent(
+                        richTextState = blockState,
+                        onNormalInsert = {
+                            val newBlock = RichTextBlock()
+                            blocks.add(index + 1, newBlock)
+                            focusBlockId = newBlock.id
+                        },
+                        onDeleteBlock = {
+                            if (blocks.size > 1) {
+                                blocks.removeAt(index)
+                                focusBlockId = when {
+                                    index > 0 -> blocks[index - 1].id
+                                    blocks.isNotEmpty() -> blocks[0].id
+                                    else -> null
+                                }
+                            }
+                        },
+                        focusRequester = focusRequester,
+                        onFocused = {
+                            focusBlockId = block.id
+                        }
+                    )
+                }
             }
         },
         bottomBar = {
             val focusedState = focusBlockId?.let { blockStates[it] }
             EditingToolbar(
                 focusedState ?: rememberRichTextState(),
-
                 onDeleteBlock = {
                     val index = blocks.indexOfFirst { it.id == focusBlockId }
-                    if (blocks.size > 1) {
-                        blocks.removeAt(blocks.indexOfFirst { it.id == focusBlockId })
+                    if (index >= 0 && blocks.size > 1) {
+                        blocks.removeAt(index)
+                        focusBlockId = when {
+                            index > 0 -> blocks[index - 1].id
+                            blocks.isNotEmpty() -> blocks[0].id
+                            else -> null
+                        }
                     }
-                    focusBlockId = when {
-                        index > 0 -> blocks[index - 1].id
-                        blocks.isNotEmpty() -> blocks[0].id
-                        else -> null
-                    }
-
                 },
                 onMoveUp = {
                     val index = blocks.indexOfFirst { it.id == focusBlockId }
@@ -218,6 +195,6 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     }
                 }
             )
-
-        })
+        }
+    )
 }

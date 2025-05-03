@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
@@ -18,18 +20,59 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 
 @OptIn(ExperimentalRichTextApi::class)
 @Composable
-fun BlockToolbar(richTextState: RichTextState, onBlockEditorClose: () -> Unit,
-                 onDeleteBlock: () -> Unit, onMoveUp : ()-> Unit, onMoveDown : ()-> Unit) {
+fun BlockToolbar(
+    richTextState: RichTextState, onBlockEditorClose: () -> Unit,
+    onDeleteBlock: () -> Unit, onMoveUp: () -> Unit, onMoveDown: () -> Unit
+) {
+
+    val textLength = richTextState.annotatedString.text.length
+
+    val currentSpanStyle = richTextState.currentSpanStyle
+
+    val isHeading = currentSpanStyle.fontWeight == FontWeight.Bold &&
+            currentSpanStyle.fontSize == 26.sp
+
+    val isOrderedList = richTextState.isOrderedList
+    val isUnorderedList = richTextState.isUnorderedList
+
+
+    val quoteStyle = SpanStyle(
+        fontStyle = FontStyle.Italic,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    )
+    val isQuote = richTextState.currentSpanStyle.fontStyle == quoteStyle.fontStyle &&
+            richTextState.currentSpanStyle.color == quoteStyle.color
+
+    val codeBlockStyle = SpanStyle(
+        fontFamily = FontFamily.Monospace,
+        fontSize = 14.sp,
+        background = Color.DarkGray,
+        textDecoration = TextDecoration.None,
+    )
+    val isCodeBlock = richTextState.currentSpanStyle == codeBlockStyle
 
     // Heading Button
     IconButton(
         onClick = {
-            richTextState.toggleSpanStyle(
-                spanStyle = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 26.sp),
-            )
+            if (isHeading
+            ) {
+                richTextState.clearSpanStyles(
+                    textRange = TextRange(
+                        0, textLength
+                    )
+                )
+            } else {
+                richTextState.addSpanStyle(
+                    spanStyle = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 26.sp),
+                    textRange = TextRange(
+                        0, textLength
+                    )
+                )
+            }
+
         },
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = if (isHeading) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {
@@ -43,12 +86,18 @@ fun BlockToolbar(richTextState: RichTextState, onBlockEditorClose: () -> Unit,
     // Numbered List Button
     IconButton(
         onClick = {
-            richTextState.clear()
-            richTextState.toggleOrderedList(
-            )
+            if (isOrderedList) {
+                richTextState.removeOrderedList()
+            } else {
+                // Ensure unordered list is not active
+                if (isUnorderedList) {
+                    richTextState.removeUnorderedList()
+                }
+                richTextState.addOrderedList()
+            }
         },
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = if (isOrderedList) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {
@@ -62,9 +111,25 @@ fun BlockToolbar(richTextState: RichTextState, onBlockEditorClose: () -> Unit,
 
     // Quote Button
     IconButton(
-        onClick = {},
+        onClick = {
+            if (isQuote
+            ) {
+                richTextState.clearSpanStyles(
+                    textRange = TextRange(
+                        0, textLength
+                    )
+                )
+            } else {
+                richTextState.addSpanStyle(
+                    spanStyle = quoteStyle,
+                    textRange = TextRange(
+                        0, textLength
+                    )
+                )
+            }
+        },
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = if (isQuote) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {
@@ -79,16 +144,12 @@ fun BlockToolbar(richTextState: RichTextState, onBlockEditorClose: () -> Unit,
     IconButton(
         onClick = {
             richTextState.addSpanStyle(
-                SpanStyle(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp,
-                    background = Color.DarkGray,
-                    textDecoration = TextDecoration.None,
-                )
+                codeBlockStyle,
+                textRange = TextRange(0, textLength)
             )
         },
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = if (isCodeBlock) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {

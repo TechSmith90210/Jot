@@ -59,12 +59,18 @@ fun BlockComponent(
                         onFocused()
                     }
                 }
-                .focusRequester(focusRequester)
-            ,
+                .focusRequester(focusRequester),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    onNormalInsert()
-                },
+                    if (!richTextState.isOrderedList) {
+                        // Handle the normal text insert here
+                        onNormalInsert()
+                    } else {
+                        val currentText = richTextState.annotatedString.toString()
+                        val newText = "$currentText\n"
+                        richTextState.setText(newText)
+                    }
+                }
             ),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
@@ -76,7 +82,6 @@ fun BlockComponent(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                 )
             },
-            contentPadding = PaddingValues(horizontal = 2.dp, vertical = 8.dp),
             textStyle = MaterialTheme.typography.titleSmall,
             colors = RichTextEditorDefaults.richTextEditorColors(
                 textColor = MaterialTheme.colorScheme.onSurface,

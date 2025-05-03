@@ -102,8 +102,35 @@ fun BlockToolbar(
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.list_ordered),
+            painter = painterResource(id = R.drawable.list_ordered_2),
             contentDescription = "Numbered List",
+            tint = MaterialTheme.colorScheme.secondary
+        )
+    }
+
+    // Unordered List Button
+    IconButton(
+        onClick = {
+            if (isUnorderedList) {
+                richTextState.removeUnorderedList()
+            } else {
+                if (isOrderedList) {
+                    richTextState.removeOrderedList()
+                }
+                richTextState.addUnorderedList()
+            }
+        },
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = if (isUnorderedList)
+                MaterialTheme.colorScheme.outline
+            else
+                MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.list_unordered),
+            contentDescription = "Unordered List",
             tint = MaterialTheme.colorScheme.secondary
         )
     }
@@ -170,8 +197,8 @@ fun BlockToolbar(
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.skip_up_line),
-            contentDescription = "Code Block",
+            painter = painterResource(id = R.drawable.arrow_up_line),
+            contentDescription = "Move Block Up",
             tint = MaterialTheme.colorScheme.secondary
         )
     }
@@ -186,8 +213,8 @@ fun BlockToolbar(
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.skip_down_line),
-            contentDescription = "Code Block",
+            painter = painterResource(id = R.drawable.arrow_down_line),
+            contentDescription = "Move Block Down",
             tint = MaterialTheme.colorScheme.secondary
         )
     }

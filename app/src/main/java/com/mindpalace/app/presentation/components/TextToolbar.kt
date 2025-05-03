@@ -104,7 +104,7 @@ fun TextToolbar(
     }
 
     IconButton(
-        onClick = {}, // Leave empty to avoid conflict
+        onClick = {},
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = if (isUnderline) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
@@ -127,7 +127,7 @@ fun TextToolbar(
             Icon(
                 painter = painterResource(id = R.drawable.font_color),
                 contentDescription = "Text Color",
-                tint = currentColor
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
     }

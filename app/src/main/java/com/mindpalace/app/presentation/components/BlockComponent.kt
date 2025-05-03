@@ -62,7 +62,7 @@ fun BlockComponent(
                 .focusRequester(focusRequester),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    if (!richTextState.isOrderedList) {
+                    if (!richTextState.isOrderedList && !richTextState.isUnorderedList) {
                         // Handle the normal text insert here
                         onNormalInsert()
                     } else {

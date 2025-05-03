@@ -1,11 +1,15 @@
 package com.mindpalace.app.presentation.screens.mind_fragment
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -28,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -101,7 +107,7 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                         onValueChange = { title = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 4.dp, horizontal = 8.dp),
                         textStyle = MaterialTheme.typography.headlineLarge.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             letterSpacing = 1.sp
@@ -161,6 +167,33 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                         }
                     )
                 }
+
+                item {
+                    TextButton(
+                        onClick = {
+                            val newBlock = RichTextBlock()
+                            blocks.add(newBlock)
+                            focusBlockId = newBlock.id
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.add_fill),
+                            contentDescription = "Add",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Add New Block",
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+
             }
         },
         bottomBar = {

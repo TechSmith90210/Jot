@@ -21,17 +21,19 @@ import java.util.UUID
 
 @Composable
 fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
-
+    // Bottom navigation controller for the tabs
     val bottomNavController = rememberNavController()
 
     Scaffold(bottomBar = {
-        BottomNavBar(bottomNavController, onCenterButtonClick = {
+        BottomNavBar(navController, onCenterButtonClick = {
+            // Generate random ID for MindFragmentEditorScreen
             val randomId = UUID.randomUUID().toString()
             navController.navigate(
                 "mind_fragment_editor/$randomId"
             )
         })
     }, content = { innerPadding ->
+        // Main NavHost for the bottom navigation
         NavHost(
             navController = bottomNavController,
             startDestination = "home_screen",
@@ -62,6 +64,7 @@ fun RootScreen(modifier: Modifier = Modifier, navController: NavController) {
                     profileViewModel = viewModel
                 )
             }
+
         }
     })
 }

@@ -1,64 +1,69 @@
 package com.mindpalace.app.presentation.screens.mind_fragment
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.mindpalace.app.R
-import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
+import com.mindpalace.app.R
+import com.mindpalace.app.presentation.components.BlockComponent
+import com.mindpalace.app.presentation.components.EditingToolbar
+import com.mohamedrejeb.richeditor.model.RichTextState
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import java.util.UUID
+
+data class RichTextBlock(
+    val id: String = UUID.randomUUID().toString(),
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
+
+    val blocks = remember { mutableStateListOf<RichTextBlock>().apply { add(RichTextBlock()) } }
+    val blockStates = remember { mutableStateMapOf<String, RichTextState>() }
+    val focusRequesters = remember { mutableStateMapOf<String, FocusRequester>() }
+    var focusBlockId by remember { mutableStateOf<String?>(null) }
     var title by remember { mutableStateOf("") }
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    val richTextState = rememberRichTextState()
-
-    val isBold by remember {
-        derivedStateOf {
-            richTextState.currentSpanStyle.fontWeight == FontWeight.Bold
-        }
-    }
-
-    val isItalic by remember {
-        derivedStateOf {
-            richTextState.currentSpanStyle.fontStyle == FontStyle.Italic
-        }
-    }
-
-    val isUnderline by remember {
-        derivedStateOf {
-            richTextState.currentSpanStyle.textDecoration == TextDecoration.Underline
-        }
-    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(id, style = MaterialTheme.typography.labelSmall) },
+                title = {
+                    Text(
+                        if (title.isEmpty()) "New Fragment" else title,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                },
+                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
@@ -89,8 +94,8 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 // Title Field
                 BasicTextField(
@@ -98,18 +103,17 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     onValueChange = { title = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            vertical = 4.dp,
-                        ),
+                        .padding(vertical = 4.dp),
                     textStyle = MaterialTheme.typography.headlineLarge.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         letterSpacing = 1.sp
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    singleLine = true,
                     decorationBox = { innerTextField ->
                         if (title.isEmpty()) {
                             Text(
-                                text = "Enter a title...",
+                                text = "Title...",
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                             )
@@ -118,241 +122,102 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     }
                 )
 
-                // Rich Text Editor
-                RichTextEditor(
-                    state = richTextState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(top = 8.dp),
-                    placeholder = {
-                        Text(
-                            text = "Start writing your thoughts...",
-                            style = MaterialTheme.typography.displaySmall,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        )
-                    },
-                    contentPadding = PaddingValues(top = 8.dp),
-                    textStyle = MaterialTheme.typography.displaySmall.copy(
-                        lineHeight = MaterialTheme.typography.displaySmall.lineHeight * 2
-                    ),
-                    colors = RichTextEditorDefaults.richTextEditorColors(
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.background,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.background,
-                    ),
-                )
-            }
-        },
-        bottomBar = {
-            AnimatedVisibility(
-                visible = imeVisible,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                BottomAppBar(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    modifier = Modifier
-                        .imePadding()
-                        .navigationBarsPadding(),
-                    content = {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(rememberScrollState()),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        )
-                        {
-                            // Heading Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(fontWeight = FontWeight.Bold)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isBold) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.heading),
-                                    contentDescription = "Heading",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
+                Spacer(modifier = Modifier.height(6.dp))
 
-                            // Bold Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(fontWeight = FontWeight.Bold)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isBold) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.bold),
-                                    contentDescription = "Bold",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
+                LazyColumn(
+                    state = rememberLazyListState()
+                ) {
+                    itemsIndexed(
+                        items = blocks,
+                        key = { _, block -> block.id }
+                    ) { index, block ->
+                        val blockState = blockStates.getOrPut(block.id) { rememberRichTextState() }
+                        val focusRequester = focusRequesters.getOrPut(block.id) { FocusRequester() }
 
-                            // Italic Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(fontStyle = FontStyle.Italic)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isItalic) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.italic),
-                                    contentDescription = "Italics",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Underline Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(textDecoration = TextDecoration.Underline)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isUnderline) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.underline),
-                                    contentDescription = "Underline",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Numbered List Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(textDecoration = TextDecoration.Underline)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isUnderline) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.list_ordered),
-                                    contentDescription = "Numbered List",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Text Color Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(textDecoration = TextDecoration.Underline)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isUnderline) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.font_color),
-                                    contentDescription = "Quote Text",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Quote Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(textDecoration = TextDecoration.Underline)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isUnderline) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.quote_text),
-                                    contentDescription = "Quote Text",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Code Block Button
-                            IconButton(
-                                onClick = {
-                                    richTextState.toggleSpanStyle(
-                                        SpanStyle(fontWeight = FontWeight.Bold)
-                                    )
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = if (isBold) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.code_s_slash_line),
-                                    contentDescription = "Code Block",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Delete Button (placeholder action)
-                            IconButton(
-                                onClick = {},
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.delete_bin_6_line),
-                                    contentDescription = "Delete",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Keyboard down
-                            IconButton(
-                                onClick = {
-                                    keyboardController?.hide()
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.keyboard_line),
-                                    contentDescription = "Keyboard hide",
-                                    tint = MaterialTheme.colorScheme.secondary
-                                )
+                        LaunchedEffect(focusBlockId) {
+                            if (focusBlockId == block.id) {
+                                focusRequester.requestFocus()
                             }
                         }
 
+                        BlockComponent(
+                            richTextState = blockState,
+                            onNormalInsert = {
+                                val newBlock = RichTextBlock()
+                                blocks.add(index + 1, newBlock)
+                                focusBlockId = newBlock.id
+                            },
+                            onDeleteBlock = {
+                                if (blocks.size > 1) {
+                                    blocks.removeAt(index)
+                                    focusBlockId = when {
+                                        index > 0 -> blocks[index - 1].id
+                                        blocks.isNotEmpty() -> blocks[0].id
+                                        else -> null
+                                    }
+                                }
+                            },
+                            focusRequester = focusRequester,
+                            onFocused = {
+                                focusBlockId = block.id
+                            },
+
+                            )
                     }
-                )
+                }
+
+//                // Button to add a new block at the end
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 16.dp)
+//                        .clickable(
+//                            indication = null,
+//                            interactionSource = remember { MutableInteractionSource() }
+//                        ) {
+//                            val newBlock = RichTextBlock()
+//                            blocks.add(newBlock)
+//                            focusBlockId = newBlock.id
+//                        }
+//                ) {
+//                    Text("Add New Block", style = MaterialTheme.typography.bodyMedium, color  = MaterialTheme.colorScheme.secondary)
+//                }
             }
-        }
-    )
+        },
+        bottomBar = {
+            val focusedState = focusBlockId?.let { blockStates[it] }
+            EditingToolbar(
+                focusedState ?: rememberRichTextState(),
+
+                onDeleteBlock = {
+                    val index = blocks.indexOfFirst { it.id == focusBlockId }
+                    if (blocks.size > 1) {
+                        blocks.removeAt(blocks.indexOfFirst { it.id == focusBlockId })
+                    }
+                    focusBlockId = when {
+                        index > 0 -> blocks[index - 1].id
+                        blocks.isNotEmpty() -> blocks[0].id
+                        else -> null
+                    }
+
+                },
+                onMoveUp = {
+                    val index = blocks.indexOfFirst { it.id == focusBlockId }
+                    if (index > 0) {
+                        val block = blocks.removeAt(index)
+                        blocks.add(index - 1, block)
+                        focusBlockId = block.id
+                    }
+                },
+                onMoveDown = {
+                    val index = blocks.indexOfFirst { it.id == focusBlockId }
+                    if (index >= 0 && index < blocks.lastIndex) {
+                        val block = blocks.removeAt(index)
+                        blocks.add(index + 1, block)
+                        focusBlockId = block.id
+                    }
+                }
+            )
+
+        })
 }

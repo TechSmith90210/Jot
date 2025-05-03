@@ -97,6 +97,7 @@ fun MindNavigator(
         composable("home_screen") {
             HomeScreen()
         }
+
         composable("mind_fragment_editor/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")
             id?.let {
@@ -108,5 +109,6 @@ fun MindNavigator(
                 navController.popBackStack()
             }
         }
+
     }
 }

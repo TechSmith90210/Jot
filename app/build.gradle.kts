@@ -73,7 +73,7 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.navigation.material)
-
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
     // Coil
     implementation(libs.coil.compose) // or latest
     implementation(libs.coil.gif)

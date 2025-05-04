@@ -170,10 +170,18 @@ fun BlockToolbar(
     // Code Block Button
     IconButton(
         onClick = {
-            richTextState.addSpanStyle(
-                codeBlockStyle,
-                textRange = TextRange(0, textLength)
-            )
+            if (isCodeBlock) {
+                richTextState.clearSpanStyles(
+                    textRange = TextRange(
+                        0, textLength
+                    )
+                )
+            } else {
+                richTextState.addSpanStyle(
+                    codeBlockStyle,
+                    textRange = TextRange(0, textLength)
+                )
+            }
         },
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = if (isCodeBlock) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,

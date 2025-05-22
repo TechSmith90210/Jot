@@ -46,7 +46,13 @@ fun TextToolbar(
         }
     }
 
-    // Bold Button
+    val isStrikethrough by remember {
+        derivedStateOf {
+            richTextState.currentSpanStyle.textDecoration == TextDecoration.LineThrough
+        }
+    }
+
+        // Bold Button
     IconButton(
         onClick = {
             richTextState.toggleSpanStyle(
@@ -106,7 +112,7 @@ fun TextToolbar(
     IconButton(
         onClick = {},
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = if (isUnderline) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
+            containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {
@@ -144,7 +150,7 @@ fun TextToolbar(
             )
         },
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = if (isUnderline) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
+            containerColor = if (isStrikethrough) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary,
         )
     ) {

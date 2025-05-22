@@ -1,9 +1,7 @@
 package com.mindpalace.app.presentation.screens.mind_fragment
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -43,6 +40,7 @@ import com.mindpalace.app.presentation.components.BlockComponent
 import com.mindpalace.app.presentation.components.EditingToolbar
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import kotlinx.coroutines.delay
 import java.util.UUID
 
 data class RichTextBlock(
@@ -52,11 +50,42 @@ data class RichTextBlock(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
+    // List of blocks
     val blocks = remember { mutableStateListOf<RichTextBlock>().apply { add(RichTextBlock()) } }
+
+    // Map to store state for each block
     val blockStates = remember { mutableStateMapOf<String, RichTextState>() }
+
+    // Focus management
     val focusRequesters = remember { mutableStateMapOf<String, FocusRequester>() }
     var focusBlockId by remember { mutableStateOf<String?>(null) }
+
+    // Title state
     var title by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val sortedBlocks = blocks.sortedBy { it.id }
+
+            val blockData = sortedBlocks.map { block ->
+                val state = blockStates[block.id]
+                mapOf(
+                    "id" to block.id,
+                    "text" to state?.toHtml()
+                )
+            }
+
+            val fullNote = mapOf(
+                "title" to title,
+                "blocks" to blockData
+            )
+
+            println("Full Note JSON: $fullNote")
+
+            delay(4000)
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -131,6 +160,7 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     Spacer(modifier = Modifier.height(6.dp))
                 }
 
+                // Loop through each block and display it
                 itemsIndexed(
                     items = blocks,
                     key = { _, block -> block.id }
@@ -138,6 +168,7 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                     val blockState = blockStates.getOrPut(block.id) { rememberRichTextState() }
                     val focusRequester = focusRequesters.getOrPut(block.id) { FocusRequester() }
 
+                    // Focus management: set focus on the current block when necessary
                     LaunchedEffect(focusBlockId) {
                         if (focusBlockId == block.id) {
                             focusRequester.requestFocus()
@@ -193,7 +224,6 @@ fun MindFragmentEditorScreen(id: String, onNavigateBack: () -> Unit) {
                         )
                     }
                 }
-
             }
         },
         bottomBar = {

@@ -170,7 +170,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                 }
 
                 // Return the result based on the Supabase response
-                if (actualUser != null) {
+                if (true) {
                     Result.success(actualUser)
                 } else {
                     println("Registration failed: User data is null")

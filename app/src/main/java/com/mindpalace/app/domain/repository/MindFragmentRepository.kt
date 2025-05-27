@@ -5,19 +5,30 @@ import com.mindpalace.app.domain.model.MindFragmentSummary
 
 interface MindFragmentRepository {
     //Create
-    suspend fun createFragment(fragment: MindFragment): Result<Unit>
+    suspend fun createFragment(
+        title: String = "Untitled Fragment", content: String = """
+         {
+          "title": "",
+          "blocks": []
+        }
+    """.trimIndent()
+    ): Result<String>
 
     //Read
     // for recently opened fragments
-    suspend fun getFragmentsByLastOpened(userId: String, limit: Int = 6): Result<List<MindFragmentSummary>>
+    suspend fun getFragmentsByLastOpened(
+        userId: String, limit: Long = 6
+    ): Result<List<MindFragmentSummary>>
 
     //for recently created fragments
-    suspend fun getFragmentsByCreatedAt(userId: String, limit: Int = 7): Result<List<MindFragmentSummary>>
+    suspend fun getFragmentsByCreatedAt(
+        userId: String, limit: Long = 7
+    ): Result<List<MindFragmentSummary>>
 
     suspend fun getAllFragments(userId: String): Result<List<MindFragmentSummary>>
 
     //To get specific Fragment
-    suspend fun getFragment(userId: String, fragmentId: String): Result<MindFragment>
+    suspend fun getFragment(fragmentId: String): Result<MindFragment>
 
     //Update
     suspend fun updateFragment(fragment: MindFragment): Result<Unit>

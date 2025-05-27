@@ -128,7 +128,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                 val result = credentialManager.getCredential(request = request, context = context)
 
                 // Check if the result contains the credential data
-                if (result.credential?.data?.isEmpty() == true) {
+                if (result.credential.data.isEmpty == true) {
                     return@withContext Result.failure(Exception("No credential data found"))
                 }
 

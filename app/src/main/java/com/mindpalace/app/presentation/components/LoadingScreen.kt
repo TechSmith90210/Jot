@@ -19,7 +19,7 @@ fun LoadingScreen() {
         content = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(60.dp),
+                    modifier = Modifier.size(40.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
             }

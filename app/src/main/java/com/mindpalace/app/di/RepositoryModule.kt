@@ -2,8 +2,10 @@ package com.mindpalace.app.di
 
 import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.data.repository.AuthRepositoryImpl
+import com.mindpalace.app.data.repository.MindFragmentRepositoryImpl
 import com.mindpalace.app.data.repository.UserRepositoryImpl
 import com.mindpalace.app.domain.repository.AuthRepository
+import com.mindpalace.app.domain.repository.MindFragmentRepository
 import com.mindpalace.app.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -26,5 +28,11 @@ object RepositoryModule {
     @Singleton
     fun provideUserRepository(supabaseClient: SupabaseClient): UserRepository {
         return UserRepositoryImpl(supabaseClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMindFragmentRepository(supabaseClient: SupabaseClient): MindFragmentRepository {
+        return MindFragmentRepositoryImpl(supabaseClient)
     }
 }

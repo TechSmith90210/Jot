@@ -104,7 +104,11 @@ fun MindNavigator(
                 RootScreen()
             }
 
-            composable("home_screen") { HomeScreen() }
+            composable("home_screen") { HomeScreen(
+                onFragmentClick = { id ->
+                    navController.navigate("mind_fragment_editor/$id")
+                }
+            ) }
             composable("search_screen") { SearchScreen(Modifier) }
             composable("blogs_screen") { BlogScreen(Modifier) }
             composable("profile_screen") {

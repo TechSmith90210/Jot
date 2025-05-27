@@ -44,7 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mindpalace.app.R
 import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.components.LoadingScreen
-import com.mindpalace.app.presentation.components.PageListItem
 import com.mindpalace.app.presentation.components.RecentNotesCard
 import com.mindpalace.app.presentation.components.titles
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentState
@@ -56,7 +55,8 @@ import io.github.jan.supabase.auth.auth
 @Composable
 fun HomeScreen(
     mindFragmentViewModel: MindFragmentViewModel = hiltViewModel(),
-    onFragmentClick: (String) -> Unit
+    onFragmentClick: (String) -> Unit,
+    onCreateFragmentClick: () -> Unit
 ) {
     val state by mindFragmentViewModel.state.collectAsState()
     val auth: Auth = SupabaseClient.client.auth
@@ -109,9 +109,9 @@ fun HomeScreen(
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    PageListItem(title = "Reminders")
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
+//                    PageListItem(title = "Reminders")
+//                    Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -145,7 +145,7 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .size(20.dp)
                                         .clickable(
-                                            onClick = { println("Hello u clicked me") },
+                                            onClick = { onCreateFragmentClick() },
                                             enabled = true,
                                             onClickLabel = null,
                                             role = null,
@@ -206,7 +206,7 @@ fun HomeScreen(
                                             Spacer(modifier = Modifier.height(24.dp))
 
                                             Button(
-                                                onClick = { /* TODO: Navigate to fragment editor */ },
+                                                onClick = { onCreateFragmentClick() },
                                                 shape = RoundedCornerShape(8.dp),
                                                 modifier = Modifier
                                                     .height(40.dp)
@@ -218,8 +218,6 @@ fun HomeScreen(
                                                 )
                                             }
                                         }
-
-
 
                                 } else {
                                         LazyColumn(

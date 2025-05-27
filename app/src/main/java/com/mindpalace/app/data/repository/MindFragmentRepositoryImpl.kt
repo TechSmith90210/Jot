@@ -89,6 +89,7 @@ class MindFragmentRepositoryImpl(supabaseClient: SupabaseClient) : MindFragmentR
                 filter {
                     eq("user_id", userId)
                 }
+                order(column = "created_at", order = Order.DESCENDING)
             }.decodeAs<List<MindFragmentSummary>>()
             Result.success(response)
         } catch (e: Exception) {

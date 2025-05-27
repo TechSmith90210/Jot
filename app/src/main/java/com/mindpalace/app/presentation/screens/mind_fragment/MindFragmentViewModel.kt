@@ -101,8 +101,8 @@ class MindFragmentViewModel @Inject constructor(
             val result = useCases.getFragment(fragmentId)
             result.fold(
                 onSuccess = { fragmentData ->
-                    Log.d("ViewModel", "Fragment loaded: ${fragmentData.toString()}")
-                    Log.d("MindFragmentEditor", "Fragment content JSON: ${fragmentData.content}")
+//                    Log.d("ViewModel", "Fragment loaded: ${fragmentData.toString()}")
+//                    Log.d("MindFragmentEditor", "Fragment content JSON: ${fragmentData.content}")
 
                     _fragment.value = fragmentData
                     _state.value = MindFragmentState.Success()

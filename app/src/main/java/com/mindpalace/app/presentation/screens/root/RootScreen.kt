@@ -7,9 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -24,7 +22,6 @@ import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
 import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
-import java.util.UUID
 
 @Composable
 fun RootScreen() {
@@ -71,6 +68,9 @@ fun RootScreen() {
                 composable("home_screen") { HomeScreen(
                     onFragmentClick = { id ->
                         bottomNavController.navigate("mind_fragment_editor/$id")
+                    },
+                    onCreateFragmentClick = {
+                        mindFragmentViewModel.createFragment()
                     }
                 ) }
                 composable("search_screen") { SearchScreen(Modifier) }

@@ -1,5 +1,6 @@
 package com.mindpalace.app.core
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -16,4 +17,27 @@ fun convertTimestampToHumanReadableFormat(timestamp: String): String {
     }
 
     return formatter.format(instant)
+}
+
+fun formatCustomDateTime(input: String): String {
+    if (input.isBlank()) return "Unknown"
+
+    val patterns = listOf(
+        "yyyy-MM-dd HH:mm:ss.SSSSSS",
+        "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd'T'HH:mm:ss"
+    )
+
+    for (pattern in patterns) {
+        try {
+            val formatter = DateTimeFormatter.ofPattern(pattern)
+            val parsed = LocalDateTime.parse(input, formatter)
+            val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a")
+            return parsed.format(outputFormatter)
+        } catch (_: Exception) {
+        }
+    }
+
+    return "Invalid date"
 }

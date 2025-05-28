@@ -67,12 +67,3 @@ fun RecentNotesCard(
         }
     )
 }
-
-val titles = listOf(
-    "Thoughts",
-    "Future plans",
-    "Project Ideas",
-    "Workout Plan",
-    "Study plan",
-    "Movies To Watch"
-)

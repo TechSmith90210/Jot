@@ -74,6 +74,13 @@ fun AllFragmentsScreen(
 
         is MindFragmentState.SuccessList -> {
             val allFragments = (state as MindFragmentState.SuccessList).createdList
+            val searchedFragments = remember(searchQuery.value.text, allFragments) {
+                val query = searchQuery.value.text.trim()
+                if (query.isBlank()) allFragments
+                else allFragments?.filter {
+                    it.title.contains(query, ignoreCase = true) == true
+                }
+            }
 
             if (allFragments?.isEmpty() ?: return) {
                 Surface {
@@ -150,8 +157,8 @@ fun AllFragmentsScreen(
                                 .padding(padding)
                                 .padding(horizontal = 8.dp),
                         ) {
-                            items(allFragments.size) { index ->
-                                val item = allFragments[index]
+                            items(searchedFragments?.size ?: 0) { index ->
+                                val item = searchedFragments?.get(index) ?: return@items
                                 Surface(
                                     color = MaterialTheme.colorScheme.surface,
                                     shape = MaterialTheme.shapes.medium
@@ -192,7 +199,7 @@ fun AllFragmentsScreen(
 
                     },
 
-                )
+                    )
             }
         }
 

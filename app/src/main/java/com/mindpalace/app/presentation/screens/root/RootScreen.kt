@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mindpalace.app.presentation.components.BottomNavBar
+import com.mindpalace.app.presentation.screens.all_fragments.AllFragmentsScreen
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentEditorScreen
@@ -59,20 +60,25 @@ fun RootScreen() {
                     })
             }
         },
-        content = { paddingValues ->
+        content = {
             NavHost(
                 navController = bottomNavController,
                 startDestination = "home_screen",
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(it)
             ) {
-                composable("home_screen") { HomeScreen(
-                    onFragmentClick = { id ->
-                        bottomNavController.navigate("mind_fragment_editor/$id")
-                    },
-                    onCreateFragmentClick = {
-                        mindFragmentViewModel.createFragment()
-                    }
-                ) }
+                composable("home_screen") {
+                    HomeScreen(
+                        onFragmentClick = { id ->
+                            bottomNavController.navigate("mind_fragment_editor/$id")
+                        },
+                        onCreateFragmentClick = {
+                            mindFragmentViewModel.createFragment()
+                        },
+                        onViewMoreClick = {
+                            bottomNavController.navigate("all_fragments_screen")
+                        }
+                    )
+                }
                 composable("search_screen") { SearchScreen(Modifier) }
                 composable("blogs_screen") { BlogScreen(Modifier) }
                 composable("profile_screen") {
@@ -98,6 +104,16 @@ fun RootScreen() {
                         onNavigateBack = { bottomNavController.navigate("profile_screen") },
                         onSignOutSuccess = {
 
+                        }
+                    )
+                }
+                composable("all_fragments_screen") {
+                    AllFragmentsScreen(
+                        onNavigateBack = { bottomNavController.navigate("home_screen") },
+                        onFragmentClick = { id ->
+                            bottomNavController.navigate("mind_fragment_editor/$id")
+                        },
+                        onCreateFragmentClick = {
                         }
                     )
                 }

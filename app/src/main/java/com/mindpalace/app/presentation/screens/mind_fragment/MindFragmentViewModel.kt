@@ -32,7 +32,7 @@ class MindFragmentViewModel @Inject constructor(
           "blocks": [
             {
               "id": "${UUID.randomUUID()}",
-              "text": "<br>"
+              "text": "blah blah blah"
             }
           ]
         }
@@ -94,6 +94,20 @@ class MindFragmentViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadFragments(userId: String) {
+        viewModelScope.launch {
+            _state.value = MindFragmentState.Loading
+            try {
+                val createdList = useCases.getFragmentsByCreatedAt(userId, limit = 10)
+                val lastOpenedList = useCases.getFragmentsByLastOpened(userId, limit = 10)
+                _state.value = MindFragmentState.SuccessList(createdList= createdList.getOrNull(), lastOpenedList= lastOpenedList.getOrNull())
+            } catch (e: Exception) {
+                _state.value = MindFragmentState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
 
     fun getFragmentById(fragmentId: String) {
         viewModelScope.launch {

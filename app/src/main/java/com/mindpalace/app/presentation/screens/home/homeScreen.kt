@@ -45,7 +45,6 @@ import com.mindpalace.app.R
 import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.components.LoadingScreen
 import com.mindpalace.app.presentation.components.RecentNotesCard
-import com.mindpalace.app.presentation.components.titles
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentState
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentViewModel
 import io.github.jan.supabase.auth.Auth
@@ -56,69 +55,132 @@ import io.github.jan.supabase.auth.auth
 fun HomeScreen(
     mindFragmentViewModel: MindFragmentViewModel = hiltViewModel(),
     onFragmentClick: (String) -> Unit,
-    onCreateFragmentClick: () -> Unit
+    onCreateFragmentClick: () -> Unit,
+    onViewMoreClick: () -> Unit
 ) {
     val state by mindFragmentViewModel.state.collectAsState()
     val auth: Auth = SupabaseClient.client.auth
+
     LaunchedEffect(Unit) {
         val currentUserId = auth.currentUserOrNull()?.id
-        mindFragmentViewModel.getFragmentsByCreatedAt(userId = currentUserId.toString(), limit = 10)
+        mindFragmentViewModel.loadFragments(userId = currentUserId.toString())
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("My Mind Palace", style = MaterialTheme.typography.titleSmall) },
-                expandedHeight = 40.dp,
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                    scrolledContainerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
-        content = { padding ->
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.padding(padding),
-                content = {
-                    Spacer(Modifier.height(7.dp))
-                    Text(
-                        text = "Jump Back In",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(start = 15.dp)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        flingBehavior = ScrollableDefaults.flingBehavior(),
-                        horizontalArrangement = Arrangement.spacedBy(13.dp),
-                        content = {
-                            item {
-                                Spacer(modifier = Modifier.width(0.dp))  // This creates space on the left
-                            }
-                            items(count = titles.size, itemContent = {
-                                RecentNotesCard(title = titles[it])
-                            })
-                            item {
-                                Spacer(modifier = Modifier.width(0.dp))  // This creates space on the left
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-//                    PageListItem(title = "Reminders")
-//                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
+    when (state) {
+        is MindFragmentState.Loading -> {
+            LoadingScreen()
+        }
+
+        is MindFragmentState.Error -> {
+            Text(text = "Error: ${(state as MindFragmentState.Error).message}")
+        }
+
+        is MindFragmentState.SuccessList -> {
+            val createdFragments = (state as MindFragmentState.SuccessList).createdList
+            val recentFragments = (state as MindFragmentState.SuccessList).lastOpenedList
+
+            if (createdFragments.isNullOrEmpty()) {
+                // Show this screen *before* rendering the Scaffold
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp, vertical = 48.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.undraw_add_notes_9xls),
+                        contentDescription = "No notes image",
                         modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .aspectRatio(1.2f)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = "No Mind Fragments Yet",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Tap below to create your first mind fragment and start organizing your thoughts.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { onCreateFragmentClick() },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .height(40.dp)
                             .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
+                    ) {
+                        Text(
+                            text = "Create Fragment",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
+            } else {
+                // Only render Scaffold when there's content
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("My Mind Palace", style = MaterialTheme.typography.titleSmall) },
+                            expandedHeight = 40.dp,
+                            colors = TopAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                titleContentColor = MaterialTheme.colorScheme.onBackground,
+                                actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                                scrolledContainerColor = MaterialTheme.colorScheme.background
+                            )
+                        )
+                    }
+                ) { padding ->
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.padding(padding)
+                    ) {
+                        Spacer(Modifier.height(7.dp))
+                        Text(
+                            text = "Jump Back In",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.padding(start = 15.dp)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            flingBehavior = ScrollableDefaults.flingBehavior(),
+                            horizontalArrangement = Arrangement.spacedBy(13.dp)
+                        ) {
+                            item { Spacer(modifier = Modifier.width(0.dp)) }
+                            items(count = recentFragments?.size ?: 0) { index ->
+                                val item = recentFragments?.get(index)
+                                RecentNotesCard(title = item?.title.toString(),
+                                    onClick = { onFragmentClick(item?.id.toString()) }
+                                    )
+                            }
+                            item { Spacer(modifier = Modifier.width(0.dp)) }
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = "Pages",
                                 style = MaterialTheme.typography.labelSmall,
@@ -130,183 +192,98 @@ fun HomeScreen(
                                     contentDescription = "more",
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clickable(
-                                            onClick = { println("Hello u clicked me") },
-                                            enabled = true,
-                                            onClickLabel = null,
-                                            role = null,
-                                            interactionSource = null,
-                                            indication = null
-                                        )
+                                        .clickable { println("Hello u clicked me") }
                                 )
                                 Icon(
                                     painter = painterResource(id = R.drawable.add_fill),
                                     contentDescription = "add page",
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clickable(
-                                            onClick = { onCreateFragmentClick() },
-                                            enabled = true,
-                                            onClickLabel = null,
-                                            role = null,
-                                            interactionSource = null,
-                                            indication = null
-                                        )
+                                        .clickable { onCreateFragmentClick() }
                                 )
                             }
+                        }
 
-                        })
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        content = {
-                            when (state) {
-                                is MindFragmentState.SuccessList -> {
-                                    val fragments =
-                                        (state as MindFragmentState.SuccessList).summaryList
-
-                                    if (fragments.isNullOrEmpty()) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(horizontal = 24.dp, vertical = 48.dp),
-                                            verticalArrangement = Arrangement.Center,
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.undraw_add_notes_9xls),
-                                                contentDescription = "No notes image",
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.6f)
-                                                    .aspectRatio(1.2f)
-                                            )
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            )
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                items(createdFragments.size) { index ->
+                                    val fragment = createdFragments[index]
+                                    ListItem(
+                                        modifier = Modifier.clickable {
+                                            onFragmentClick(fragment.id)
+                                        },
+                                        headlineContent = {
                                             Text(
-                                                text = "No Mind Fragments Yet",
-                                                style = MaterialTheme.typography.titleSmall,
-                                                color = MaterialTheme.colorScheme.onBackground
+                                                fragment.title,
+                                                style = MaterialTheme.typography.labelLarge,
+                                                color = MaterialTheme.colorScheme.primary
                                             )
-
-                                            Spacer(modifier = Modifier.height(8.dp))
-
-                                            Text(
-                                                text = "Tap below to create your first mind fragment and start organizing your thoughts.",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.secondary,
-                                                textAlign = TextAlign.Center
+                                        },
+                                        trailingContent = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.arrow_right_s_line),
+                                                contentDescription = "arrow",
+                                                tint = MaterialTheme.colorScheme.secondary
                                             )
+                                        },
+                                        leadingContent = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.file_text_line),
+                                                contentDescription = "file icon",
+                                                tint = MaterialTheme.colorScheme.secondary
+                                            )
+                                        },
+                                        colors = ListItemDefaults.colors(
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            headlineColor = MaterialTheme.colorScheme.onSurface,
+                                            trailingIconColor = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    )
 
-                                            Spacer(modifier = Modifier.height(24.dp))
+                                    HorizontalDivider(
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        modifier = Modifier.padding(start = 58.dp)
+                                    )
 
-                                            Button(
-                                                onClick = { onCreateFragmentClick() },
-                                                shape = RoundedCornerShape(8.dp),
-                                                modifier = Modifier
-                                                    .height(40.dp)
-                                                    .fillMaxWidth()
-                                            ) {
+                                    if (index == createdFragments.lastIndex) {
+                                        ListItem(
+                                            modifier = Modifier.clickable {
+                                                onViewMoreClick()
+                                            },
+                                            leadingContent = {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.more_line),
+                                                    contentDescription = ""
+                                                )
+                                            },
+                                            headlineContent = {
                                                 Text(
-                                                    text = "Create Fragment",
-                                                    style = MaterialTheme.typography.labelSmall
+                                                    "View More",
+                                                    style = MaterialTheme.typography.labelLarge
                                                 )
                                             }
-                                        }
-
-                                } else {
-                                        LazyColumn(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                                        ) {
-                                            items(fragments.size) { index ->
-                                                val fragment = fragments[index]
-                                                ListItem(
-                                                    modifier = Modifier
-                                                        .clickable {
-                                                            onFragmentClick(fragment.id)
-                                                        },
-                                                    headlineContent = {
-                                                        Text(
-                                                            fragment.title,
-                                                            style = MaterialTheme.typography.labelLarge,
-                                                            color = MaterialTheme.colorScheme.primary
-                                                        )
-                                                    },
-                                                    trailingContent = {
-                                                        Icon(
-                                                            painter = painterResource(id = R.drawable.arrow_right_s_line),
-                                                            contentDescription = "arrow",
-                                                            tint = MaterialTheme.colorScheme.secondary
-                                                        )
-                                                    },
-                                                    leadingContent = {
-                                                        Icon(
-                                                            painter = painterResource(id = R.drawable.file_text_line),
-                                                            contentDescription = "file icon",
-                                                            tint = MaterialTheme.colorScheme.secondary
-                                                        )
-                                                    },
-                                                    colors = ListItemDefaults.colors(
-                                                        containerColor = MaterialTheme.colorScheme.surface,
-                                                        headlineColor = MaterialTheme.colorScheme.onSurface,
-                                                        trailingIconColor = MaterialTheme.colorScheme.onSurface
-                                                    )
-                                                )
-
-                                                if (index != fragments.lastIndex + 1) {
-                                                    Modifier.padding(horizontal = 16.dp)
-                                                    HorizontalDivider(
-                                                        thickness = 1.dp,
-                                                        color = MaterialTheme.colorScheme.outline,
-                                                        modifier = Modifier.padding(start = 58.dp)
-                                                    )
-                                                }
-                                                if (index == fragments.lastIndex) {
-                                                    ListItem(
-                                                        modifier = Modifier.clickable {},
-                                                        leadingContent = {
-                                                            Icon(
-                                                                painter = painterResource(id = R.drawable.more_line),
-                                                                contentDescription = ""
-                                                            )
-                                                        },
-                                                        headlineContent = {
-                                                            Text(
-                                                                "View More",
-                                                                style = MaterialTheme.typography.labelLarge
-                                                            )
-                                                        })
-                                                }
-                                                HorizontalDivider(
-                                                    thickness = 1.dp,
-                                                    color = MaterialTheme.colorScheme.outline,
-                                                    modifier = Modifier.padding(start = 58.dp)
-                                                )
-                                            }
-                                        }
+                                        )
                                     }
-
-
                                 }
-
-                                is MindFragmentState.Loading -> {
-                                    LoadingScreen()
-                                }
-
-                                is MindFragmentState.Error -> {
-                                    Text(text = "Error : ${(state as MindFragmentState.Error).message}")
-                                }
-
-                                else -> {}
                             }
-                        })
-                })
-        })
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> Unit
+    }
 }

@@ -50,7 +50,7 @@ fun SearchScreen(modifier: Modifier = Modifier) {
                 TextField(
                     value = searchQuery.value,
                     onValueChange = { newValue -> searchQuery.value = newValue },
-                    label = { Text(text = "Search For Notes or Folders ...",style = MaterialTheme.typography.labelSmall) },
+                    label = { Text(text = "Search For Notes or Blogs ...",style = MaterialTheme.typography.labelSmall) },
                     maxLines = 1,
                     singleLine = true,
                     shape = RoundedCornerShape(15.dp),

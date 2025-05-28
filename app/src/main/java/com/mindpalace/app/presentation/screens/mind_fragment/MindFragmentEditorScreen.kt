@@ -80,7 +80,7 @@ data class RichTextBlock(
 fun MindFragmentEditorScreen(
     id: String,
     onNavigateBack: () -> Unit,
-    mindFragmentViewModel: MindFragmentViewModel = hiltViewModel()
+    mindFragmentViewModel: MindFragmentViewModel = hiltViewModel(),
 ) {
     // List of blocks
     val blocks = remember { mutableStateListOf<RichTextBlock>().apply { add(RichTextBlock()) } }
@@ -172,7 +172,7 @@ fun MindFragmentEditorScreen(
                 mindFragmentViewModel.updateFragment(updatedFragment)
             }
 
-            delay(4000)
+            delay(500)
         }
     }
 

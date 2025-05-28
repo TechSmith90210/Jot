@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mindpalace.app.R
@@ -25,6 +26,7 @@ import com.mindpalace.app.R
 @Composable
 fun RecentNotesCard(
     title: String,
+    onClick: () -> Unit = {}
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -38,7 +40,9 @@ fun RecentNotesCard(
         modifier = Modifier
             .width(130.dp)
             .height(110.dp),
-        onClick = { },
+        onClick = {
+            onClick()
+        },
         content = {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -55,7 +59,9 @@ fun RecentNotesCard(
                     text = title,
                     style = MaterialTheme.typography.labelMedium,
                     maxLines = 1,
-                    overflow= TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.width(100.dp),
+                    textAlign = TextAlign.Center
                 )
             }
         }

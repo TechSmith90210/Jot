@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.mindpalace.app.presentation.screens.all_fragments.AllFragmentsScreen
 import com.mindpalace.app.presentation.screens.auth.login.LoginScreen
 import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
 import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
@@ -79,7 +80,7 @@ fun MindNavigator(
                         popUpTo("loginScreen") { inclusive = true }
                     }
                 },
-                onNavigateToOnboarding =  {
+                onNavigateToOnboarding = {
                     navController.navigate("avatarSelectorScreen") {
                         popUpTo("loginScreen") { inclusive = true }
                     }
@@ -104,14 +105,29 @@ fun MindNavigator(
                 RootScreen()
             }
 
-            composable("home_screen") { HomeScreen(
-                onFragmentClick = { id ->
-                    navController.navigate("mind_fragment_editor/$id")
-                },
-                onCreateFragmentClick = {
-                    navController.navigate("mind_fragment_editor")
-                }
-            ) }
+            composable("home_screen") {
+                HomeScreen(
+                    onFragmentClick = { id ->
+                        navController.navigate("mind_fragment_editor/$id")
+                    },
+                    onCreateFragmentClick = {
+                        navController.navigate("mind_fragment_editor")
+                    },
+                    onViewMoreClick = {
+                        navController.navigate("all_fragments_screen")
+                    }
+                )
+            }
+            composable("all_fragments_screen") {
+                AllFragmentsScreen(
+                    onNavigateBack = { navController.navigate("home_screen") },
+                    onFragmentClick = { id ->
+                        navController.navigate("mind_fragment_editor/$id")
+                    },
+                    onCreateFragmentClick = {}
+                )
+
+            }
             composable("search_screen") { SearchScreen(Modifier) }
             composable("blogs_screen") { BlogScreen(Modifier) }
             composable("profile_screen") {
@@ -124,7 +140,9 @@ fun MindNavigator(
             composable("mind_fragment_editor/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 if (id != null) {
-                    MindFragmentEditorScreen(id = id, onNavigateBack = { navController.popBackStack() })
+                    MindFragmentEditorScreen(
+                        id = id,
+                        onNavigateBack = { navController.popBackStack() })
                 } else {
                     navController.popBackStack()
                 }

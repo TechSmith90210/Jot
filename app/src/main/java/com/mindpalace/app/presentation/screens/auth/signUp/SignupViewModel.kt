@@ -3,8 +3,8 @@ package com.mindpalace.app.presentation.screens.auth.signUp
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mindpalace.app.domain.usecase.GoogleSignInUseCase
-import com.mindpalace.app.domain.usecase.SignUpUseCase
+import com.mindpalace.app.domain.usecase.auth.GoogleSignInUseCase
+import com.mindpalace.app.domain.usecase.auth.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

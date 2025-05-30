@@ -1,4 +1,4 @@
-package com.mindpalace.app.domain.usecase
+package com.mindpalace.app.domain.usecase.auth
 
 import com.mindpalace.app.domain.model.User
 import com.mindpalace.app.domain.repository.AuthRepository

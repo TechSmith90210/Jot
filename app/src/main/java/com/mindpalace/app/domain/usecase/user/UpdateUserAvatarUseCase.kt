@@ -1,4 +1,4 @@
-package com.mindpalace.app.domain.usecase
+package com.mindpalace.app.domain.usecase.user
 
 import com.mindpalace.app.domain.repository.UserRepository
 

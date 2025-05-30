@@ -1,4 +1,4 @@
-package com.mindpalace.app.domain.usecase
+package com.mindpalace.app.domain.usecase.mind_fragment
 
 data class MindFragmentUseCases(
     val createFragment: CreateFragmentUseCase,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -37,6 +39,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,6 +52,7 @@ import com.mindpalace.app.presentation.components.LoadingScreen
 import com.mindpalace.app.presentation.components.RecentNotesCard
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentState
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentViewModel
+import com.mindpalace.app.presentation.theme.Surface
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 
@@ -88,6 +94,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     Image(
                         painter = painterResource(id = R.drawable.undraw_add_notes_9xls),
                         contentDescription = "No notes image",
@@ -95,6 +102,7 @@ fun HomeScreen(
                             .fillMaxWidth(0.6f)
                             .aspectRatio(1.2f)
                     )
+
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -133,7 +141,12 @@ fun HomeScreen(
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("My Mind Palace", style = MaterialTheme.typography.titleSmall) },
+                            title = {
+                                Text(
+                                    "My Mind Palace",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            },
                             expandedHeight = 40.dp,
                             colors = TopAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.background,
@@ -166,9 +179,10 @@ fun HomeScreen(
                             item { Spacer(modifier = Modifier.width(0.dp)) }
                             items(count = recentFragments?.size ?: 0) { index ->
                                 val item = recentFragments?.get(index)
-                                RecentNotesCard(title = item?.title.toString(),
+                                RecentNotesCard(
+                                    title = item?.title.toString(),
                                     onClick = { onFragmentClick(item?.id.toString()) }
-                                    )
+                                )
                             }
                             item { Spacer(modifier = Modifier.width(0.dp)) }
                         }

@@ -3,7 +3,7 @@ package com.mindpalace.app.presentation.screens.onboarding.avatarSelection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mindpalace.app.core.SupabaseClient
-import com.mindpalace.app.domain.usecase.UpdateUserAvatarUseCase
+import com.mindpalace.app.domain.usecase.user.UpdateUserAvatarUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow

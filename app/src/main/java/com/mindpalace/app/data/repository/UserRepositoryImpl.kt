@@ -12,22 +12,37 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 val client = HttpClient(CIO) {
     install(ContentNegotiation) {
-        json()
+        json(
+            Json {
+                ignoreUnknownKeys=true
+            }
+        )
     }
 }
 
 @Serializable
+data class RandomUserLogin(
+    val username: String
+)
+
+@Serializable
+data class RandomUserResult(
+    val login: RandomUserLogin
+)
+
+@Serializable
 data class RandomUserResponse(
-    val usernames: List<String>
+    val results: List<RandomUserResult>
 )
 
 suspend fun fetchRandomUserName(): String {
     val response: RandomUserResponse =
-        client.get("https://usernameapiv1.vercel.app/api/random-usernames").body()
-    return response.usernames.firstOrNull() ?: "random_name"
+        client.get("https://randomuser.me/api/").body()
+    return response.results.firstOrNull()?.login?.username ?:"random_user"
 }
 
 class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepository {
@@ -47,3 +62,8 @@ class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepos
 
     }
 }
+
+//fun main() = runBlocking {
+//    val username = fetchRandomUserName()
+//    println("Random Username : $username")
+//}

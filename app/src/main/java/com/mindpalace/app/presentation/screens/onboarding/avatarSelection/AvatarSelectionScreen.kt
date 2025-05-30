@@ -1,6 +1,7 @@
 package com.mindpalace.app.presentation.screens.onboarding.avatarSelection
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +53,9 @@ fun AvatarSelectorScreen(
 
     when (avatarSelectionState) {
         is AvatarSelectionState.Success -> {
-            navController.navigate("rootScreen")
+            navController.navigate("rootScreen") {
+                popUpTo(0) { inclusive = true }
+            }
         }
 
         is AvatarSelectionState.Loading -> {
@@ -61,7 +64,9 @@ fun AvatarSelectorScreen(
 
         is AvatarSelectionState.Error -> {
             val errorMessage = (avatarSelectionState as AvatarSelectionState.Error).message
-            Text(text = errorMessage)
+            Box (modifier = Modifier.padding(10.dp)){
+                Text(text = errorMessage)
+            }
         }
 
         is AvatarSelectionState.Idle -> {

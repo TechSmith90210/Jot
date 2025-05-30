@@ -1,4 +1,4 @@
-package com.mindpalace.app.domain.usecase
+package com.mindpalace.app.domain.usecase.mind_fragment
 
 import com.mindpalace.app.domain.model.MindFragmentSummary
 import com.mindpalace.app.domain.repository.MindFragmentRepository

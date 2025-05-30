@@ -116,7 +116,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                     .joinToString("") { "%02x".format(it) }
 
                 val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(true)
+                    .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(BuildConfig.GOOGLE_CLIENT_ID)
                     .setNonce(hashedNonce)
                     .build()

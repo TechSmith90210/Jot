@@ -124,7 +124,9 @@ fun MindNavigator(
                     onFragmentClick = { id ->
                         navController.navigate("mind_fragment_editor/$id")
                     },
-                    onCreateFragmentClick = {}
+                    onCreateFragmentClick = {
+                        navController.navigate("mind_fragment_editor")
+                    }
                 )
 
             }
@@ -155,6 +157,5 @@ fun MindNavigator(
                 )
             }
         }
-
     }
 }

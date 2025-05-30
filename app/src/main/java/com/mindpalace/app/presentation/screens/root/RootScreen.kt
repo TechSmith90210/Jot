@@ -114,6 +114,7 @@ fun RootScreen() {
                             bottomNavController.navigate("mind_fragment_editor/$id")
                         },
                         onCreateFragmentClick = {
+                            mindFragmentViewModel.createFragment()
                         }
                     )
                 }

@@ -1,6 +1,7 @@
 package com.mindpalace.app.di
 
 import com.mindpalace.app.domain.repository.AuthRepository
+import com.mindpalace.app.domain.repository.MindBlogRepository
 import com.mindpalace.app.domain.repository.MindFragmentRepository
 import com.mindpalace.app.domain.repository.UserRepository
 import com.mindpalace.app.domain.usecase.mind_fragment.CreateFragmentUseCase
@@ -14,6 +15,14 @@ import com.mindpalace.app.domain.usecase.auth.GoogleSignInUseCase
 import com.mindpalace.app.domain.usecase.auth.LoginUseCase
 import com.mindpalace.app.domain.usecase.mind_fragment.MindFragmentUseCases
 import com.mindpalace.app.domain.usecase.auth.SignUpUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.CreateBlogUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.DeleteBlogUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.GetAllBlogsUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.GetBlogByIdUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.GetLatestBlogsUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.GetUserBlogUseCase
+import com.mindpalace.app.domain.usecase.mind_blog.MindBlogUseCases
+import com.mindpalace.app.domain.usecase.mind_blog.UpdateBlogUseCase
 import com.mindpalace.app.domain.usecase.mind_fragment.UpdateFragmentUseCase
 import com.mindpalace.app.domain.usecase.user.UpdateUserAvatarUseCase
 import dagger.Module
@@ -68,6 +77,22 @@ object UseCaseModule {
             updateFragment = UpdateFragmentUseCase(repository),
             deleteFragment = DeleteFragmentUseCase(repository),
             getFragment = GetFragmentUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMindBlogUseCases(
+        repository: MindBlogRepository
+    ): MindBlogUseCases {
+        return MindBlogUseCases(
+            createBlogUseCase = CreateBlogUseCase(repository),
+            getAllBlogsUseCase = GetAllBlogsUseCase(repository),
+            getLatestBlogsUseCase = GetLatestBlogsUseCase(repository),
+            getBlogByIdUseCase = GetBlogByIdUseCase(repository),
+            getUserBlogUseCase = GetUserBlogUseCase(repository),
+            updateBlogUseCase = UpdateBlogUseCase(repository),
+            deleteBlogUseCase = DeleteBlogUseCase(repository)
         )
     }
 }

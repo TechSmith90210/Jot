@@ -15,6 +15,9 @@ import androidx.navigation.compose.rememberNavController
 import com.mindpalace.app.presentation.components.BottomNavBar
 import com.mindpalace.app.presentation.screens.all_fragments.AllFragmentsScreen
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
+import com.mindpalace.app.presentation.screens.blog.BlogState
+import com.mindpalace.app.presentation.screens.blog.BlogViewModel
+import com.mindpalace.app.presentation.screens.blog.MindBlogEditorScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentEditorScreen
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentState
@@ -39,6 +42,16 @@ fun RootScreen() {
         }
     }
 
+    val mindBlogViewModel: BlogViewModel = hiltViewModel()
+    val state1 by mindBlogViewModel.state.collectAsState()
+
+    LaunchedEffect(state1) {
+        if (state1 is BlogState.Success) {
+            val blogId = (state1 as BlogState.Success).blogId
+            bottomNavController.navigate("mind_blog_editor/$blogId")
+            mindBlogViewModel.resetState()
+        }
+    }
 
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -80,7 +93,14 @@ fun RootScreen() {
                     )
                 }
                 composable("search_screen") { SearchScreen(Modifier) }
-                composable("blogs_screen") { BlogScreen(Modifier) }
+                composable("blogs_screen") {
+                    BlogScreen(
+                        Modifier,
+                        onCreateBlogClick = {
+                            mindBlogViewModel.createMindBlog()
+                        }
+                    )
+                }
                 composable("profile_screen") {
                     val viewModel: ProfileViewModel = hiltViewModel()
                     ProfileScreen(
@@ -93,6 +113,16 @@ fun RootScreen() {
                     if (id != null) {
                         MindFragmentEditorScreen(
                             id = id,
+                            onNavigateBack = { bottomNavController.popBackStack() })
+                    } else {
+                        bottomNavController.popBackStack()
+                    }
+                }
+                composable("mind_blog_editor/{id}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")
+                    if (id != null) {
+                        MindBlogEditorScreen(
+                            blogId = id,
                             onNavigateBack = { bottomNavController.popBackStack() })
                     } else {
                         bottomNavController.popBackStack()
@@ -118,6 +148,7 @@ fun RootScreen() {
                         }
                     )
                 }
+
             }
         }
     )

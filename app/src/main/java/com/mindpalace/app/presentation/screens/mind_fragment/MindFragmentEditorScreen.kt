@@ -60,6 +60,7 @@ import com.mindpalace.app.R
 import com.mindpalace.app.core.formatCustomDateTime
 import com.mindpalace.app.presentation.components.BlockComponent
 import com.mindpalace.app.presentation.components.EditingToolbar
+import com.mindpalace.app.presentation.components.RichTextBlock
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import kotlinx.coroutines.Job
@@ -69,11 +70,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
-import java.util.UUID
-
-data class RichTextBlock(
-    val id: String = UUID.randomUUID().toString(),
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

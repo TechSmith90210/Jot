@@ -1,6 +1,9 @@
 package com.mindpalace.app.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -13,6 +16,9 @@ import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
 import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
 import com.mindpalace.app.presentation.screens.auth.signUp.SignupViewModel
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
+import com.mindpalace.app.presentation.screens.blog.BlogState
+import com.mindpalace.app.presentation.screens.blog.BlogViewModel
+import com.mindpalace.app.presentation.screens.blog.MindBlogEditorScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentEditorScreen
 import com.mindpalace.app.presentation.screens.onboarding.WelcomeScreen
@@ -131,7 +137,15 @@ fun MindNavigator(
 
             }
             composable("search_screen") { SearchScreen(Modifier) }
-            composable("blogs_screen") { BlogScreen(Modifier) }
+            composable("blogs_screen") {
+                val blogViewModel: BlogViewModel = hiltViewModel()
+                BlogScreen(
+                    Modifier,
+                    onCreateBlogClick = {
+                        blogViewModel.createMindBlog()
+                    }
+                )
+            }
             composable("profile_screen") {
                 val viewModel: ProfileViewModel = hiltViewModel()
                 ProfileScreen(
@@ -149,6 +163,16 @@ fun MindNavigator(
                     navController.popBackStack()
                 }
             }
+            composable("mind_blog_editor/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                if (id != null) {
+                    MindBlogEditorScreen(
+                        blogId = id,
+                        onNavigateBack = { navController.popBackStack() })
+                } else {
+                    navController.popBackStack()
+                }
+            }
             composable("settings_screen") {
                 SettingsScreen(
                     Modifier,
@@ -156,6 +180,7 @@ fun MindNavigator(
                     onSignOutSuccess = { navController.navigate("splashScreen") }
                 )
             }
+
         }
     }
 }

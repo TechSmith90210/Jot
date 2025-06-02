@@ -3,6 +3,8 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 
 fun convertTimestampToHumanReadableFormat(timestamp: String): String {
     val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
@@ -19,25 +21,24 @@ fun convertTimestampToHumanReadableFormat(timestamp: String): String {
     return formatter.format(instant)
 }
 
+
+
 fun formatCustomDateTime(input: String): String {
     if (input.isBlank()) return "Unknown"
 
-    val patterns = listOf(
-        "yyyy-MM-dd HH:mm:ss.SSSSSS",
-        "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd'T'HH:mm:ss"
-    )
+    val flexibleFormatter = DateTimeFormatterBuilder()
+        .appendPattern("yyyy-MM-dd['T'][' ']HH:mm:ss")
+        .optionalStart()
+        .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true) // supports .SSS to .SSSSSSSSS
+        .optionalEnd()
+        .toFormatter()
 
-    for (pattern in patterns) {
-        try {
-            val formatter = DateTimeFormatter.ofPattern(pattern)
-            val parsed = LocalDateTime.parse(input, formatter)
-            val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a")
-            return parsed.format(outputFormatter)
-        } catch (_: Exception) {
-        }
+    return try {
+        val parsed = LocalDateTime.parse(input, flexibleFormatter)
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a")
+        parsed.format(outputFormatter)
+    } catch (e: Exception) {
+        "Invalid date"
     }
-
-    return "Invalid date"
 }
+

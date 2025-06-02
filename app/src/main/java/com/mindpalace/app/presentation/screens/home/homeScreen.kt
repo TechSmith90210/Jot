@@ -2,11 +2,13 @@ package com.mindpalace.app.presentation.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -124,15 +127,26 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { onCreateFragmentClick() },
-                        shape = RoundedCornerShape(8.dp),
+                        onClick = {
+                            onCreateFragmentClick()
+                        },
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        contentPadding = PaddingValues(horizontal = 4.dp),
                         modifier = Modifier
-                            .height(40.dp)
-                            .fillMaxWidth()
+                            .fillMaxWidth(1f)
+                            .border(
+                                width = 0.5.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .height(35.dp)
                     ) {
                         Text(
-                            text = "Create Fragment",
-                            style = MaterialTheme.typography.labelSmall
+                            text = "Create Fragment", style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
@@ -143,12 +157,9 @@ fun HomeScreen(
                         TopAppBar(
                             title = {
                                 Text(
-                                    "My Mind Palace",
-                                    style = MaterialTheme.typography.titleSmall
+                                    "My Mind Palace", style = MaterialTheme.typography.titleSmall
                                 )
-                            },
-                            expandedHeight = 40.dp,
-                            colors = TopAppBarColors(
+                            }, expandedHeight = 40.dp, colors = TopAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.background,
                                 titleContentColor = MaterialTheme.colorScheme.onBackground,
                                 actionIconContentColor = MaterialTheme.colorScheme.onBackground,
@@ -156,8 +167,7 @@ fun HomeScreen(
                                 scrolledContainerColor = MaterialTheme.colorScheme.background
                             )
                         )
-                    }
-                ) { padding ->
+                    }) { padding ->
                     Column(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceEvenly,
@@ -181,8 +191,7 @@ fun HomeScreen(
                                 val item = recentFragments?.get(index)
                                 RecentNotesCard(
                                     title = item?.title.toString(),
-                                    onClick = { onFragmentClick(item?.id.toString()) }
-                                )
+                                    onClick = { onFragmentClick(item?.id.toString()) })
                             }
                             item { Spacer(modifier = Modifier.width(0.dp)) }
                         }
@@ -206,15 +215,13 @@ fun HomeScreen(
                                     contentDescription = "more",
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clickable { println("Hello u clicked me") }
-                                )
+                                        .clickable { println("Hello u clicked me") })
                                 Icon(
                                     painter = painterResource(id = R.drawable.add_fill),
                                     contentDescription = "add page",
                                     modifier = Modifier
                                         .size(20.dp)
-                                        .clickable { onCreateFragmentClick() }
-                                )
+                                        .clickable { onCreateFragmentClick() })
                             }
                         }
 
@@ -235,34 +242,30 @@ fun HomeScreen(
                                     val fragment = createdFragments[index]
                                     ListItem(
                                         modifier = Modifier.clickable {
-                                            onFragmentClick(fragment.id)
-                                        },
-                                        headlineContent = {
-                                            Text(
-                                                fragment.title,
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                        },
-                                        trailingContent = {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.arrow_right_s_line),
-                                                contentDescription = "arrow",
-                                                tint = MaterialTheme.colorScheme.secondary
-                                            )
-                                        },
-                                        leadingContent = {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.file_text_line),
-                                                contentDescription = "file icon",
-                                                tint = MaterialTheme.colorScheme.secondary
-                                            )
-                                        },
-                                        colors = ListItemDefaults.colors(
-                                            containerColor = MaterialTheme.colorScheme.surface,
-                                            headlineColor = MaterialTheme.colorScheme.onSurface,
-                                            trailingIconColor = MaterialTheme.colorScheme.onSurface
+                                        onFragmentClick(fragment.id)
+                                    }, headlineContent = {
+                                        Text(
+                                            fragment.title,
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.primary
                                         )
+                                    }, trailingContent = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.arrow_right_s_line),
+                                            contentDescription = "arrow",
+                                            tint = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }, leadingContent = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.file_text_line),
+                                            contentDescription = "file icon",
+                                            tint = MaterialTheme.colorScheme.secondary
+                                        )
+                                    }, colors = ListItemDefaults.colors(
+                                        containerColor = MaterialTheme.colorScheme.surface,
+                                        headlineColor = MaterialTheme.colorScheme.onSurface,
+                                        trailingIconColor = MaterialTheme.colorScheme.onSurface
+                                    )
                                     )
 
                                     HorizontalDivider(
@@ -272,23 +275,19 @@ fun HomeScreen(
                                     )
 
                                     if (index == createdFragments.lastIndex) {
-                                        ListItem(
-                                            modifier = Modifier.clickable {
-                                                onViewMoreClick()
-                                            },
-                                            leadingContent = {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.more_line),
-                                                    contentDescription = ""
-                                                )
-                                            },
-                                            headlineContent = {
-                                                Text(
-                                                    "View More",
-                                                    style = MaterialTheme.typography.labelLarge
-                                                )
-                                            }
-                                        )
+                                        ListItem(modifier = Modifier.clickable {
+                                            onViewMoreClick()
+                                        }, leadingContent = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.more_line),
+                                                contentDescription = ""
+                                            )
+                                        }, headlineContent = {
+                                            Text(
+                                                "View More",
+                                                style = MaterialTheme.typography.labelLarge
+                                            )
+                                        })
                                     }
                                 }
                             }

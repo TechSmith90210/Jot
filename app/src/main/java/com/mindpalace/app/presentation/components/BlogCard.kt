@@ -20,6 +20,7 @@ fun BlogCard(
         onClick = { /* TODO: Handle blog click */ },
         modifier = Modifier
             .fillMaxWidth()
+            .height(300.dp)
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),

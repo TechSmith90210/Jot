@@ -98,6 +98,9 @@ fun RootScreen() {
                         Modifier,
                         onCreateBlogClick = {
                             mindBlogViewModel.createMindBlog()
+                        },
+                        onBlogCLick = { id ->
+                            bottomNavController.navigate("mind_blog_editor/$id")
                         }
                     )
                 }
@@ -105,7 +108,10 @@ fun RootScreen() {
                     val viewModel: ProfileViewModel = hiltViewModel()
                     ProfileScreen(
                         onNavigateToSettings = { bottomNavController.navigate("settings_screen") },
-                        profileViewModel = viewModel
+                        profileViewModel = viewModel,
+                        onClickUserBlog = { id ->
+                            bottomNavController.navigate("mind_blog_editor/$id")
+                        }
                     )
                 }
                 composable("mind_fragment_editor/{id}") { backStackEntry ->

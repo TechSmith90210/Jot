@@ -15,10 +15,11 @@ import com.mindpalace.app.core.formatCustomDateTime
 
 @Composable
 fun BlogCard(
-    title: String, description: String, author: String, date: String
+    title: String, description: String, author: String, date: String,
+    onBlogClick: () -> Unit,
 ) {
     Card(
-        onClick = { /* TODO: Handle blog click */ },
+        onClick = { onBlogClick() },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
@@ -64,7 +65,7 @@ fun BlogCard(
                     )
                 }
                 Text(
-                    text = formatCustomDateTime(date) , style = MaterialTheme.typography.labelSmall
+                    text = formatCustomDateTime(date), style = MaterialTheme.typography.labelSmall
                 )
             }
         }

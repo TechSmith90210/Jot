@@ -2,6 +2,7 @@ package com.mindpalace.app.presentation.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mindpalace.app.R
 import com.mindpalace.app.core.convertTimestampToHumanReadableFormat
+import com.mindpalace.app.core.formatCustomDateTime
 import com.mindpalace.app.presentation.components.AvatarImage
 import com.mindpalace.app.presentation.components.LoadingScreen
 import com.mindpalace.app.presentation.components.pageContents
@@ -61,7 +63,8 @@ import com.mindpalace.app.presentation.components.pageContents
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onNavigateToSettings: () -> Unit, profileViewModel: ProfileViewModel = hiltViewModel()
+    onNavigateToSettings: () -> Unit, profileViewModel: ProfileViewModel = hiltViewModel(),
+    onClickUserBlog: (String) -> Unit
 ) {
     val state by profileViewModel.state.collectAsState()
 
@@ -74,6 +77,7 @@ fun ProfileScreen(
 
         is ProfileState.Success -> {
             val user = (state as ProfileState.Success).profile
+            val blogs = (state as ProfileState.Success).blogs
 
             Scaffold(topBar = {
                 TopAppBar(
@@ -144,6 +148,7 @@ fun ProfileScreen(
                                 )
                                 .height(35.dp)
                         ) {
+                            //Todo: implement editing profile
                             Text(
                                 text = "Edit Profile", style = MaterialTheme.typography.labelSmall
                             )
@@ -159,8 +164,9 @@ fun ProfileScreen(
                         )
                     }
 
-                    items(pageContents.size) { index ->
-                        val blog = pageContents[index]
+                    items(blogs?.size ?: 0) { index ->
+                        val blog = blogs?.get(index) ?: return@items
+
                         Surface(
                             shape = MaterialTheme.shapes.medium,
                             color = MaterialTheme.colorScheme.background,
@@ -172,6 +178,9 @@ fun ProfileScreen(
                                     MaterialTheme.colorScheme.outline,
                                     MaterialTheme.shapes.small
                                 )
+                                .clickable{
+                                    onClickUserBlog(blog.id)
+                                }
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
@@ -191,7 +200,7 @@ fun ProfileScreen(
                                 )
 
                                 Text(
-                                    text = blog.date,
+                                    text = formatCustomDateTime(blog.publishDate) ,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(top = 6.dp)

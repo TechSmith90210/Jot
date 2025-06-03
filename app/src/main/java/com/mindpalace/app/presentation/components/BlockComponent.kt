@@ -34,6 +34,7 @@ fun BlockComponent(
     onDeleteBlock: () -> Unit,
     focusRequester: FocusRequester,
     onFocused: () -> Unit,
+    isEditor : Boolean = true
 ) {
     var lastText by remember { mutableStateOf("") }
 
@@ -47,6 +48,7 @@ fun BlockComponent(
 
     Box {
         RichTextEditor(
+            readOnly = !isEditor,
             state = richTextState,
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

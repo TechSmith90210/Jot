@@ -48,6 +48,14 @@ object UseCaseModule {
 
     @Provides
     @Singleton
+    fun provideGetUserBlogUseCase(
+        repository: MindBlogRepository
+    ): GetUserBlogUseCase {
+        return GetUserBlogUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
     fun provideGoogleSignInUseCase(authRepository: AuthRepository): GoogleSignInUseCase {
         return GoogleSignInUseCase(authRepository)
     }

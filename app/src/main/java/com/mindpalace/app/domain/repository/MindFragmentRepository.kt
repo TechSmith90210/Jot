@@ -6,12 +6,7 @@ import com.mindpalace.app.domain.model.MindFragmentSummary
 interface MindFragmentRepository {
     //Create
     suspend fun createFragment(
-        title: String = "Untitled Fragment", content: String = """
-         {
-          "title": "",
-          "blocks": []
-        }
-    """.trimIndent()
+
     ): Result<String>
 
     //Read

@@ -25,22 +25,10 @@ class MindFragmentViewModel @Inject constructor(
     val fragment: StateFlow<MindFragment?> = _fragment.asStateFlow()
 
 
-    fun createFragment(title: String = "Untitled Fragment") {
-        val defaultContent = """
-        {
-          "title": "$title",
-          "blocks": [
-            {
-              "id": "${UUID.randomUUID()}",
-              "text": "blah blah blah"
-            }
-          ]
-        }
-    """.trimIndent()
-
+    fun createFragment() {
         viewModelScope.launch {
             _state.value = MindFragmentState.Loading
-            val result = useCases.createFragment(title, defaultContent)
+            val result = useCases.createFragment()
             _state.value = if (result.isSuccess) {
                 val fragmentId = result.getOrNull() ?: ""
                 MindFragmentState.Success(fragmentId = fragmentId)

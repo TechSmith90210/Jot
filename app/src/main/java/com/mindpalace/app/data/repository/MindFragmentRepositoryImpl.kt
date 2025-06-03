@@ -17,11 +17,22 @@ class MindFragmentRepositoryImpl(supabaseClient: SupabaseClient) : MindFragmentR
     private val supcli = supabaseClient.client
     private val now = Instant.now().toString()
 
-    override suspend fun createFragment(title: String, content: String): Result<String> {
+    override suspend fun createFragment(): Result<String> {
         return try {
+            val title = ""
+            val defaultContent = """
+        {
+          "title": "",
+          "blocks": [
+            {
+              "id": "${UUID.randomUUID()}",
+              "text": ""
+            }
+          ]
+        }
+    """.trimIndent()
             val currentUserId =
                 auth.currentUserOrNull()?.id ?: return Result.failure(Exception("User is null"))
-
             val fragmentToInsert = MindFragment(
                 id = UUID.randomUUID().toString(),
                 userId = currentUserId,
@@ -29,7 +40,7 @@ class MindFragmentRepositoryImpl(supabaseClient: SupabaseClient) : MindFragmentR
                 lastOpenedAt = now,
                 lastUpdatedAt = now,
                 title = title,
-                content = content
+                content = defaultContent
             )
 
             // This will throw if it fails — so if no exception, it's successful

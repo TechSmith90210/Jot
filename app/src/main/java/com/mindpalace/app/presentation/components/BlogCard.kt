@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mindpalace.app.core.formatCustomDateTime
 
 @Composable
 fun BlogCard(
@@ -20,7 +21,6 @@ fun BlogCard(
         onClick = { /* TODO: Handle blog click */ },
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
@@ -64,7 +64,7 @@ fun BlogCard(
                     )
                 }
                 Text(
-                    text = date, style = MaterialTheme.typography.labelSmall
+                    text = formatCustomDateTime(date) , style = MaterialTheme.typography.labelSmall
                 )
             }
         }

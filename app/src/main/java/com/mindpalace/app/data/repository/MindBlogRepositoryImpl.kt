@@ -59,10 +59,10 @@ class MindBlogRepositoryImpl(
                 )
             ) {
                 order("publish_date", Order.DESCENDING)
-            }.decodeList<MindBlogWithUser>()
-            Log.d(
-                "MindBlogRepositoryImpl", "getAllBlogs: $allBlogs"
-            )
+            }.decodeList<MindBlogWithUser>().shuffled()
+//            Log.d(
+//                "MindBlogRepositoryImpl", "getAllBlogs: $allBlogs"
+//            )
             Result.success(allBlogs)
         } catch (e: Exception) {
             Result.failure(e)
@@ -71,9 +71,20 @@ class MindBlogRepositoryImpl(
 
     override suspend fun getLatestBlogs(): Result<List<MindBlogWithUser>> {
         return try {
-            val latestBlogs = blogs.select {
+            val latestBlogs = blogs.select(
+                columns = Columns.raw(
+                    """
+                           *,
+                            user:author_id(display_name, avatar_id)
+                    """.trimIndent()
+                )
+            ) {
                 order("publish_date", Order.DESCENDING)
+                limit(5)
             }.decodeList<MindBlogWithUser>()
+            Log.d(
+                "MindBlogRepositoryImpl", "getLatestBlogs: $latestBlogs"
+            )
             Result.success(latestBlogs)
         } catch (e: Exception) {
             Result.failure(e)
@@ -127,19 +138,5 @@ class MindBlogRepositoryImpl(
             Result.failure(e)
         }
     }
-
-//    suspend fun testGetAllBlogsWithUser() {
-//        val result = blogs.select(
-//            columns = Columns.raw(
-//                "*,user:author_id(display_name,avatar_id)"
-//            )
-//        ) {
-//            order("publish_date", Order.DESCENDING)
-//        }.decodeList<MindBlogWithUser>()
-//
-//        result.forEach {
-//            println("Blog: ${it.title} by ${it.displayName}, Avatar ID: ${it.avatarId}")
-//        }
-//    }
 
 }

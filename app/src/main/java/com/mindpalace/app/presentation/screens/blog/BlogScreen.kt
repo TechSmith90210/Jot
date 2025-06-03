@@ -33,13 +33,12 @@ fun BlogScreen(
     onCreateBlogClick: () -> Unit,
     blogViewModel: BlogViewModel = hiltViewModel()
 ) {
-    val pagerState = rememberPagerState(pageCount = { pageContents.size })
     val blog by blogViewModel.blog.collectAsState()
     val state by blogViewModel.state.collectAsState()
     val auth: Auth = SupabaseClient.client.auth
 
     LaunchedEffect(Unit) {
-        blogViewModel.getAllBlogs()
+        blogViewModel.loadBlogs()
     }
 
     when (state) {
@@ -52,7 +51,11 @@ fun BlogScreen(
         }
 
         is BlogState.SuccessList -> {
+
             val allBlogs = (state as BlogState.SuccessList).allBlogs
+            val latestBlogs = (state as BlogState.SuccessList).latestBlogs
+            val pagerState = rememberPagerState(pageCount = { latestBlogs?.size ?: 0 })
+
             Scaffold(
                 topBar = {
                     TopAppBar(
@@ -100,7 +103,7 @@ fun BlogScreen(
                             contentPadding = PaddingValues(horizontal = 10.dp),
                             pageSpacing = 5.dp,
                         ) { index ->
-                            val blogPost = allBlogs?.get(index)
+                            val blogPost = latestBlogs?.get(index)
                             if (blogPost != null)
                                 BlogCard(
                                     title = blogPost.title,

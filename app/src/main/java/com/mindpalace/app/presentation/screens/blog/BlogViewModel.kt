@@ -1,10 +1,12 @@
 package com.mindpalace.app.presentation.screens.blog
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mindpalace.app.domain.model.MindBlog
 import com.mindpalace.app.domain.usecase.mind_blog.MindBlogUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,11 +84,39 @@ class BlogViewModel @Inject constructor(
             if (result.isSuccess) {
                 _state.value =
                     BlogState.SuccessList(latestBlogs = result.getOrNull() ?: emptyList())
+                Log.d(
+                    "BlogViewModel", "getLatestBlogs: ${result.getOrNull()}"
+                )
             } else {
                 _state.value = BlogState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
             }
         }
     }
+
+    fun loadBlogs() {
+        viewModelScope.launch {
+            _state.value = BlogState.Loading
+
+            val allBlogsDeferred = async { mindBlogUseCases.getAllBlogsUseCase() }
+            val latestBlogsDeferred = async { mindBlogUseCases.getLatestBlogsUseCase() }
+
+            val allBlogsResult = allBlogsDeferred.await()
+            val latestBlogsResult = latestBlogsDeferred.await()
+
+            if (allBlogsResult.isSuccess && latestBlogsResult.isSuccess) {
+                _state.value = BlogState.SuccessList(
+                    allBlogs = allBlogsResult.getOrNull() ?: emptyList(),
+                    latestBlogs = latestBlogsResult.getOrNull() ?: emptyList()
+                )
+            } else {
+                val errorMessage = allBlogsResult.exceptionOrNull()?.message
+                    ?: latestBlogsResult.exceptionOrNull()?.message
+                    ?: "Unknown Error"
+                _state.value = BlogState.Error(errorMessage)
+            }
+        }
+    }
+
 
     fun getUserBlogs(id: String) {
         viewModelScope.launch {

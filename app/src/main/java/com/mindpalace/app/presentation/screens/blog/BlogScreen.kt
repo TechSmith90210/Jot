@@ -81,7 +81,7 @@ fun BlogScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.sticky_note_add_line),
                                     contentDescription = "Add Blog",
-                                    tint = MaterialTheme.colorScheme.tertiary
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         },

@@ -67,10 +67,7 @@ fun RootScreen() {
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
-                    navController = bottomNavController,
-                    onCenterButtonClick = {
-                        mindFragmentViewModel.createFragment()
-                    })
+                    navController = bottomNavController,)
             }
         },
         content = {

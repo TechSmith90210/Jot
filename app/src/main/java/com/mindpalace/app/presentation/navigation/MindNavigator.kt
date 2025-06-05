@@ -136,7 +136,7 @@ fun MindNavigator(
                 )
 
             }
-            composable("search_screen") { SearchScreen(Modifier) }
+//            composable("search_screen") { SearchScreen(Modifier) }
             composable("blogs_screen") {
                 val blogViewModel: BlogViewModel = hiltViewModel()
                 BlogScreen(

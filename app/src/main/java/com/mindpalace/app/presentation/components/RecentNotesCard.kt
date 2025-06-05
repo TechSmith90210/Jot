@@ -52,7 +52,8 @@ fun RecentNotesCard(
                 Icon(
                     painter = painterResource(id = R.drawable.file_text_line),
                     contentDescription = "file icon",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(

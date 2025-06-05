@@ -26,12 +26,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -97,7 +102,6 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
                     Image(
                         painter = painterResource(id = R.drawable.undraw_add_notes_9xls),
                         contentDescription = "No notes image",
@@ -167,7 +171,23 @@ fun HomeScreen(
                                 scrolledContainerColor = MaterialTheme.colorScheme.background
                             )
                         )
-                    }) { padding ->
+                    },
+                    floatingActionButtonPosition = FabPosition.End,
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                            onClick = {
+                                onCreateFragmentClick()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.sticky_note_add_line),
+                                contentDescription = "add fragment"
+                            )
+                        }
+                    }
+                    ) { padding ->
                     Column(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceEvenly,
@@ -293,6 +313,7 @@ fun HomeScreen(
                             }
                         }
                     }
+
                 }
             }
         }

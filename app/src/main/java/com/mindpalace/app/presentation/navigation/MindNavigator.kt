@@ -1,9 +1,6 @@
 package com.mindpalace.app.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,7 +13,6 @@ import com.mindpalace.app.presentation.screens.auth.login.LoginViewModel
 import com.mindpalace.app.presentation.screens.auth.signUp.SignUpScreen
 import com.mindpalace.app.presentation.screens.auth.signUp.SignupViewModel
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
-import com.mindpalace.app.presentation.screens.blog.BlogState
 import com.mindpalace.app.presentation.screens.blog.BlogViewModel
 import com.mindpalace.app.presentation.screens.blog.MindBlogEditorScreen
 import com.mindpalace.app.presentation.screens.home.HomeScreen
@@ -29,7 +25,6 @@ import com.mindpalace.app.presentation.screens.onboarding.splash.SplashViewModel
 import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
 import com.mindpalace.app.presentation.screens.root.RootScreen
-import com.mindpalace.app.presentation.screens.search.SearchScreen
 import com.mindpalace.app.presentation.screens.settings.SettingsScreen
 
 @Composable
@@ -108,7 +103,13 @@ fun MindNavigator(
         ) {
             // RootScreen that contains the Scaffold and BottomNavBar
             composable("rootScreen") {
-                RootScreen()
+                RootScreen(
+                    onNavigateToSplashScreen = {
+                        navController.navigate("splashScreen") {
+                            popUpTo("rootScreen") { inclusive = true }
+                        }
+                    }
+                )
             }
 
             composable("home_screen") {
@@ -144,18 +145,26 @@ fun MindNavigator(
                     onCreateBlogClick = {
                         blogViewModel.createMindBlog()
                     },
-                    onBlogCLick = { id->
+                    onBlogCLick = { id ->
                         navController.navigate("mind_blog_editor/$id")
                     }
                 )
             }
             composable("profile_screen") {
                 val viewModel: ProfileViewModel = hiltViewModel()
+                val blogViewModel: BlogViewModel = hiltViewModel()
+
                 ProfileScreen(
-                    onNavigateToSettings = { navController.navigate("settings_screen") },
                     profileViewModel = viewModel,
-                    onClickUserBlog = { id->
+                    onClickUserBlog = { id ->
                         navController.navigate("mind_blog_editor/$id")
+                    },
+                    onSignOut = { navController.navigate("splashScreen") },
+                    onCreateBlog = {
+                        blogViewModel.createMindBlog()
+                    },
+                    onClickEditProfile = {
+                        navController.navigate("edit_profile_screen")
                     }
                 )
             }

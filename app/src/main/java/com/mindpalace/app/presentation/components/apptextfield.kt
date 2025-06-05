@@ -3,6 +3,7 @@ package com.mindpalace.app.presentation.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,7 +31,9 @@ fun AppTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    isDisabled: Boolean = false,
+    isMultiline: Boolean = false
 ) {
     var passwordVisible = remember { mutableStateOf(false) }
 
@@ -38,21 +41,22 @@ fun AppTextField(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
+            color = if (isDisabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(bottom = 6.dp)
         )
         OutlinedTextField(
+            readOnly = isDisabled,
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp),
+                .then(if (isMultiline) Modifier.heightIn(min = 100.dp) else Modifier.height(52.dp)),
             textStyle = MaterialTheme.typography.titleSmall,
-            singleLine = true,
+            singleLine = !isMultiline,
             shape = RoundedCornerShape(4.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Email,
-                imeAction = ImeAction.Next
+                imeAction = if (isMultiline) ImeAction.Default else ImeAction.Next
             ),
             visualTransformation = if (isPassword && !passwordVisible.value) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
@@ -61,8 +65,7 @@ fun AppTextField(
                         if (passwordVisible.value) R.drawable.eye_line else R.drawable.eye_close_line
                     IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
                         Icon(
-                            painter = painterResource(id = icon),
-                            contentDescription = null
+                            painter = painterResource(id = icon), contentDescription = null
                         )
                     }
                 }
@@ -70,11 +73,11 @@ fun AppTextField(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedBorderColor = if (isDisabled) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.outlineVariant,
+                unfocusedBorderColor = if (isDisabled) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.outline,
                 cursorColor = MaterialTheme.colorScheme.primary,
-                unfocusedTextColor = MaterialTheme.colorScheme.primary,
-                focusedTextColor = MaterialTheme.colorScheme.primary
+                unfocusedTextColor = if (isDisabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary,
+                focusedTextColor = if (isDisabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
             )
         )
     }

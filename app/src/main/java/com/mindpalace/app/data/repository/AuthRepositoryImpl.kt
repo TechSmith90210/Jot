@@ -151,7 +151,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
 
                 // Prepare user object
                 val user = User(
-                    id = currentUser.id ?: "",
+                    id = currentUser.id,
                     email = currentUser.email ?: "",
                     createdAt = currentUser.createdAt.toString(),
                     lastSignedIn = currentUser.lastSignInAt.toString(),
@@ -208,4 +208,15 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
             data
         }
     }
+
+    override suspend fun signOutUser(): Result<Unit> {
+        return try {
+            auth.signOut()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }

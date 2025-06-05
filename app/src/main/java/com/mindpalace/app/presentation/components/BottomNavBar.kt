@@ -2,13 +2,8 @@ package com.mindpalace.app.presentation.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -99,7 +94,8 @@ val bottomNavItems = listOf<BottomNavItem>(
         route = "blogs_screen",
         unselectedIcon = R.drawable.book_open_line,
         selectedIcon = R.drawable.book_open_fill
-    ), BottomNavItem(
+    ),
+    BottomNavItem(
         title = "Profile",
         route = "profile_screen",
         unselectedIcon = R.drawable.account_circle_line,

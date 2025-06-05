@@ -10,6 +10,8 @@ sealed class ProfileState {
         val profile: User,
         val blogs: List<MindBlog>? = null
     ) : ProfileState()
+    object SignedOut: ProfileState()
+    object ProfileUpdated: ProfileState()
 
     data class Error(val message: String) : ProfileState()
 }

@@ -4,16 +4,10 @@ import com.mindpalace.app.domain.repository.AuthRepository
 import com.mindpalace.app.domain.repository.MindBlogRepository
 import com.mindpalace.app.domain.repository.MindFragmentRepository
 import com.mindpalace.app.domain.repository.UserRepository
-import com.mindpalace.app.domain.usecase.mind_fragment.CreateFragmentUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.DeleteFragmentUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.GetAllFragmentsUseCase
 import com.mindpalace.app.domain.usecase.auth.GetCurrentUserUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByCreatedAtUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByLastOpenedUseCase
 import com.mindpalace.app.domain.usecase.auth.GoogleSignInUseCase
 import com.mindpalace.app.domain.usecase.auth.LoginUseCase
-import com.mindpalace.app.domain.usecase.mind_fragment.MindFragmentUseCases
+import com.mindpalace.app.domain.usecase.auth.SignOutUserUseCase
 import com.mindpalace.app.domain.usecase.auth.SignUpUseCase
 import com.mindpalace.app.domain.usecase.mind_blog.CreateBlogUseCase
 import com.mindpalace.app.domain.usecase.mind_blog.DeleteBlogUseCase
@@ -23,8 +17,16 @@ import com.mindpalace.app.domain.usecase.mind_blog.GetLatestBlogsUseCase
 import com.mindpalace.app.domain.usecase.mind_blog.GetUserBlogUseCase
 import com.mindpalace.app.domain.usecase.mind_blog.MindBlogUseCases
 import com.mindpalace.app.domain.usecase.mind_blog.UpdateBlogUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.CreateFragmentUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.DeleteFragmentUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.GetAllFragmentsUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByCreatedAtUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByLastOpenedUseCase
+import com.mindpalace.app.domain.usecase.mind_fragment.MindFragmentUseCases
 import com.mindpalace.app.domain.usecase.mind_fragment.UpdateFragmentUseCase
 import com.mindpalace.app.domain.usecase.user.UpdateUserAvatarUseCase
+import com.mindpalace.app.domain.usecase.user.UpdateUserProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,6 +54,18 @@ object UseCaseModule {
         repository: MindBlogRepository
     ): GetUserBlogUseCase {
         return GetUserBlogUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignOutUseCase(authRepository: AuthRepository): SignOutUserUseCase {
+        return SignOutUserUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserProfileUseCase {
+        return UpdateUserProfileUseCase(userRepository)
     }
 
     @Provides

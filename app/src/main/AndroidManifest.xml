@@ -15,6 +15,7 @@
         >
         <activity
             android:name=".presentation.MainActivity"
+            android:screenOrientation="sensorPortrait"
             android:exported="true"
             android:theme="@style/Theme.MindPalace.Splash">
             <intent-filter>

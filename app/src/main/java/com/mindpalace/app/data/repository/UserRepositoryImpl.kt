@@ -18,9 +18,8 @@ val client = HttpClient(CIO) {
     install(ContentNegotiation) {
         json(
             Json {
-                ignoreUnknownKeys=true
-            }
-        )
+                ignoreUnknownKeys = true
+            })
     }
 }
 
@@ -40,9 +39,8 @@ data class RandomUserResponse(
 )
 
 suspend fun fetchRandomUserName(): String {
-    val response: RandomUserResponse =
-        client.get("https://randomuser.me/api/").body()
-    return response.results.firstOrNull()?.login?.username ?:"random_user"
+    val response: RandomUserResponse = client.get("https://randomuser.me/api/").body()
+    return response.results.firstOrNull()?.login?.username ?: "random_user"
 }
 
 class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepository {
@@ -60,6 +58,27 @@ class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepos
             }
         }
 
+    }
+
+    override suspend fun updateProfile(
+        avatarId: String, displayName: String, bio: String?
+    ): Result<Unit> {
+        val uid = supabaseClient.client.auth.currentUserOrNull()?.id
+        return try {
+            supabaseClient.client.from("users").update(
+                {
+                    User::avatarId setTo avatarId
+                    User::displayName setTo displayName
+                    User::bio setTo bio
+                }) {
+                filter {
+                    User::id eq uid
+                }
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
 

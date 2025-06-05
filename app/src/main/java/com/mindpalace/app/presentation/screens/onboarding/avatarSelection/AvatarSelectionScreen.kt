@@ -98,7 +98,6 @@ fun AvatarSelectorScreen(
                                 onClick = {
                                     randomSeed = UUID.randomUUID().toString()
                                     print(randomSeed)
-
                                 },
                                 colors = ButtonColors(
                                     containerColor = MaterialTheme.colorScheme.secondary,

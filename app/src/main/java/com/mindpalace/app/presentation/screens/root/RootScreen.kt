@@ -1,5 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.mindpalace.app.presentation.screens.root
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -8,10 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.mindpalace.app.presentation.components.BottomNavBar
 import com.mindpalace.app.presentation.screens.all_fragments.AllFragmentsScreen
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
@@ -24,11 +31,14 @@ import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentState
 import com.mindpalace.app.presentation.screens.mind_fragment.MindFragmentViewModel
 import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
+import com.mindpalace.app.presentation.screens.profile.edit_profile.EditProfileScreen
 import com.mindpalace.app.presentation.screens.search.SearchScreen
-import com.mindpalace.app.presentation.screens.settings.SettingsScreen
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RootScreen() {
+fun RootScreen(
+    onNavigateToSplashScreen: () -> Unit
+) {
 
     val mindFragmentViewModel: MindFragmentViewModel = hiltViewModel()
     val state by mindFragmentViewModel.state.collectAsState()
@@ -67,11 +77,12 @@ fun RootScreen() {
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
-                    navController = bottomNavController,)
+                    navController = bottomNavController,
+                )
             }
         },
         content = {
-            NavHost(
+            AnimatedNavHost(
                 navController = bottomNavController,
                 startDestination = "home_screen",
                 modifier = Modifier.padding(it)
@@ -104,10 +115,18 @@ fun RootScreen() {
                 composable("profile_screen") {
                     val viewModel: ProfileViewModel = hiltViewModel()
                     ProfileScreen(
-                        onNavigateToSettings = { bottomNavController.navigate("settings_screen") },
                         profileViewModel = viewModel,
                         onClickUserBlog = { id ->
                             bottomNavController.navigate("mind_blog_editor/$id")
+                        },
+                        onSignOut = {
+                            onNavigateToSplashScreen()
+                        },
+                        onCreateBlog = {
+                            mindBlogViewModel.createMindBlog()
+                        },
+                        onClickEditProfile = {
+                            bottomNavController.navigate("edit_profile_screen")
                         }
                     )
                 }
@@ -118,7 +137,7 @@ fun RootScreen() {
                             id = id,
                             onNavigateBack = { bottomNavController.popBackStack() })
                     } else {
-                        bottomNavController.popBackStack()
+                        bottomNavController.navigate("profile_screen")
                     }
                 }
                 composable("mind_blog_editor/{id}") { backStackEntry ->
@@ -131,12 +150,33 @@ fun RootScreen() {
                         bottomNavController.popBackStack()
                     }
                 }
-                composable("settings_screen") {
-                    SettingsScreen(
-                        Modifier,
-                        onNavigateBack = { bottomNavController.navigate("profile_screen") },
-                        onSignOutSuccess = {
-
+//                composable("settings_screen") {
+//                    SettingsScreen(
+//                        Modifier,
+//                        onNavigateBack = { bottomNavController.navigate("profile_screen") },
+//                        onSignOutSuccess = {
+//
+//                        }
+//                    )
+//                }
+                composable(
+                    "edit_profile_screen",
+                    enterTransition = {
+                        slideInHorizontally(initialOffsetX = { it }) + fadeIn()
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(initialOffsetX = { -it }) + fadeIn()
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                    }
+                ) {
+                    EditProfileScreen(
+                        onBackClick = {
+                            bottomNavController.navigate("profile_screen")
                         }
                     )
                 }

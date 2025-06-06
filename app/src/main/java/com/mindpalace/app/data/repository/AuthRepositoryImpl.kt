@@ -160,22 +160,32 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
                     bio = ""  // You can update this with the user's bio if available
                 )
 
-                // Insert the user into the Supabase table
+                // Check if user already exists in the Supabase table
+                val existingUser = try {
+                    supcli.from("users").select {
+                        filter {
+                            User::id eq currentUser.id
+                        }
+                    }.decodeSingleOrNull<User>()
+                } catch (e: Exception) {
+                    println("Error fetching user from Supabase: $e")
+                    null
+                }
+
+                if (existingUser != null) {
+                    // User already exists, return existing user
+                    return@withContext Result.success(existingUser)
+                }
+
+                // User does not exist, insert new record
                 val actualUser = try {
                     supcli.from("users").insert(user) { select() }.decodeSingle<User>()
                 } catch (e: Exception) {
-                    // Log the error if the insert fails
                     println("Error inserting user into Supabase: $e")
                     return@withContext Result.failure(e)
                 }
 
-                // Return the result based on the Supabase response
-                if (true) {
-                    Result.success(actualUser)
-                } else {
-                    println("Registration failed: User data is null")
-                    Result.failure(Exception("Registration failed: User data is null"))
-                }
+                Result.success(actualUser)
 
             } catch (e: Exception) {
                 // Log and return the error
@@ -184,6 +194,7 @@ class AuthRepositoryImpl(supabaseCli: SupabaseClient) : AuthRepository {
             }
         }
     }
+
 
     override suspend fun getCurrentUser(): User? {
         val currentUserId = auth.currentUserOrNull()?.id ?: return null

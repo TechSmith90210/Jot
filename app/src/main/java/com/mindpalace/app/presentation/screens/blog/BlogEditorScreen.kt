@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -28,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -182,44 +184,49 @@ fun MindBlogEditorScreen(
             scrollBehavior.nestedScrollConnection
         ),
         topBar = {
-            MediumTopAppBar(
-                modifier = Modifier.border(
-                    width = 0.1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = MaterialTheme.shapes.small
-                ),
+            LargeTopAppBar(
+
                 title = {
-                    BasicTextField(
-                        readOnly = !isEditor,
-                        value = description,
-                        onValueChange = {
-                            description = it
-                            scheduleAutoSave()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onBackground
-                        ),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        decorationBox = { innerTextField ->
-                            if (description.isEmpty()) {
-                                Text(
-                                    "Add a short description...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                )
-                            }
-                            innerTextField()
-                        })
-                }, actions = {
-                    IconButton(
-                        onClick = {
-                            showBottomSheet = true
-                        }) {
-                        Icon(
-                            painter = painterResource(R.drawable.more_line), contentDescription = ""
-                        )
+                    Column (verticalArrangement = Arrangement.spacedBy(5.dp)){
+                        Text("Description",
+                            style=MaterialTheme.typography.labelSmall
+                            )
+                        BasicTextField(
+                            readOnly = !isEditor,
+                            value = description,
+                            onValueChange = {
+                                description = it
+                                scheduleAutoSave()
+                            },
+
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            ),
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            decorationBox = { innerTextField ->
+                                if (description.isEmpty()) {
+                                    Text(
+                                        "Add a short description...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                    )
+                                }
+                                innerTextField()
+                            })
                     }
+                }, actions = {
+                    if(isEditor) {
+                        IconButton(
+                            onClick = {
+                                showBottomSheet = true
+                            }) {
+                            Icon(
+                                painter = painterResource(R.drawable.more_line), contentDescription = ""
+                            )
+                        }
+                    }
+
                 }, navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -236,7 +243,7 @@ fun MindBlogEditorScreen(
         }, content = { padding ->
             LazyColumn(
                 modifier = Modifier
-                    .padding(top=padding.calculateTopPadding())
+                    .padding(padding)
                     .fillMaxSize()
             ) {
                 item {

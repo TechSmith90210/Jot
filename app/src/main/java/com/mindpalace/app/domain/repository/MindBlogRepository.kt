@@ -19,7 +19,7 @@ interface MindBlogRepository {
     suspend fun getLatestBlogs(): Result<List<MindBlogWithUser>>
 
     suspend fun getUserBlogs(id: String): Result<List<MindBlog>>
-    suspend fun getBlogById(id: String): Result<MindBlog>
+    suspend fun getBlogById(id: String): Result<MindBlogWithUser>
 
     //Update
     suspend fun updateBlog(blog: MindBlog): Result<Unit>

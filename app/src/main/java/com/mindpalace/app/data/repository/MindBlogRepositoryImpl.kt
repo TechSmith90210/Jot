@@ -102,11 +102,18 @@ class MindBlogRepositoryImpl(
         }
     }
 
-    override suspend fun getBlogById(id: String): Result<MindBlog> {
+    override suspend fun getBlogById(id: String): Result<MindBlogWithUser> {
         return try {
-            val blog = blogs.select {
+            val blog = blogs.select(
+                columns = Columns.raw(
+                    """
+                        *,
+                        user:author_id(display_name,avatar_id)
+                    """.trimIndent()
+                )
+            ) {
                 filter { eq("id", id) }
-            }.decodeSingle<MindBlog>()
+            }.decodeSingle<MindBlogWithUser>()
             Result.success(blog)
         } catch (e: Exception) {
             Result.failure(e)

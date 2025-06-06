@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mindpalace.app.domain.model.MindBlog
+import com.mindpalace.app.domain.model.MindBlogWithUser
 import com.mindpalace.app.domain.usecase.mind_blog.MindBlogUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -21,8 +22,8 @@ class BlogViewModel @Inject constructor(
     private val _state = MutableStateFlow<BlogState>(BlogState.Idle)
     val state: StateFlow<BlogState> = _state
 
-    private val _blog = MutableStateFlow<MindBlog?>(null)
-    val blog: StateFlow<MindBlog?> = _blog.asStateFlow()
+    private val _blog = MutableStateFlow<MindBlogWithUser?>(null)
+    val blog: StateFlow<MindBlogWithUser?> = _blog.asStateFlow()
 
     fun createMindBlog() {
         val title = ""

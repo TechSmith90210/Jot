@@ -23,7 +23,8 @@ import com.mindpalace.app.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavBar(
-    navController: NavController
+    navController: NavController,
+    currentUserId: String
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.98f),
@@ -38,8 +39,11 @@ fun BottomNavBar(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination?.route
 
-        bottomNavItems.forEach { item ->
-            val selected = currentDestination == item.route
+        bottomNavItems(currentUserId).forEach { item ->
+            val selected = when {
+                item.route.startsWith("profile_screen/") -> currentDestination?.startsWith("profile_screen/") == true
+                else -> currentDestination == item.route
+            }
 
             NavigationBarItem(
                 label = {
@@ -76,7 +80,7 @@ fun BottomNavBar(
 }
 
 
-val bottomNavItems = listOf<BottomNavItem>(
+fun bottomNavItems(currentUserId: String) : List<BottomNavItem> = listOf(
     BottomNavItem(
         title = "Home",
         route = "home_screen",
@@ -97,7 +101,7 @@ val bottomNavItems = listOf<BottomNavItem>(
     ),
     BottomNavItem(
         title = "Profile",
-        route = "profile_screen",
+        route = "profile_screen/$currentUserId",
         unselectedIcon = R.drawable.account_circle_line,
         selectedIcon = R.drawable.account_circle_fill
     )

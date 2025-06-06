@@ -48,10 +48,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mindpalace.app.R
+import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.core.convertTimestampToHumanReadableFormat
 import com.mindpalace.app.core.formatCustomDateTime
 import com.mindpalace.app.presentation.components.AvatarImage
 import com.mindpalace.app.presentation.components.LoadingScreen
+import io.github.jan.supabase.auth.auth
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,15 +63,17 @@ fun ProfileScreen(
     onClickUserBlog: (String) -> Unit,
     onSignOut: () -> Unit,
     onCreateBlog: () -> Unit,
-    onClickEditProfile: () -> Unit
+    onClickEditProfile: () -> Unit,
+    userId: String? = null,
+    onNavigateBack: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
     val state by profileViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        profileViewModel.fetchCurrentUser()
+        profileViewModel.getUserProfile(userId.toString())
     }
+
 
     fun onConfirmSignOut() {
         profileViewModel.signOut()
@@ -84,18 +88,40 @@ fun ProfileScreen(
         is ProfileState.Success -> {
             val user = (state as ProfileState.Success).profile
             val blogs = (state as ProfileState.Success).blogs
+            val isMe = user.id == SupabaseClient.client.auth.currentUserOrNull()?.id
 
             Scaffold(topBar = {
                 TopAppBar(
-                    title = { Text("My Profile", style = MaterialTheme.typography.titleSmall) },
+                    title = {
+                        Text(
+                            if (isMe)
+                                "My Profile" else "@${user.displayName}",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    },
                     actions = {
-                        IconButton(onClick = {                                 showDialog = true
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.logout_box_r_line),
-                                tint = MaterialTheme.colorScheme.secondary,
-                                contentDescription = "Settings"
-                            )
+                        if (isMe) {
+                            IconButton(onClick = {
+                                showDialog = true
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.logout_box_r_line),
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    contentDescription = "Settings"
+                                )
+                            }
+                        }
+                    },
+                    navigationIcon = {
+                        if (!isMe) {
+                            IconButton(onClick = {
+                                onNavigateBack()
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.arrow_left_line),
+                                    contentDescription = "Back"
+                                )
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -132,107 +158,124 @@ fun ProfileScreen(
                         )
 
                         Text(
-                            text = user.bio ?: "No Bio Yet",
+                            text = if (user.bio.isNullOrBlank()) "No Bio Yet" else user.bio,
                             style = MaterialTheme.typography.labelMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
                         )
-
-                        Button(
-                            onClick = {
-                                onClickEditProfile()
-                            },
-                            shape = RoundedCornerShape(4.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            contentPadding = PaddingValues(horizontal = 16.dp),
-                            modifier = Modifier
-                                .fillMaxWidth(0.9f)
-                                .border(
-                                    width = 0.5.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(4.dp)
+                        if (isMe) {
+                            Button(
+                                onClick = {
+                                    onClickEditProfile()
+                                },
+                                shape = RoundedCornerShape(4.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .border(
+                                        width = 0.5.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                                    .height(35.dp)
+                            ) {
+                                Text(
+                                    text = "Edit Profile",
+                                    style = MaterialTheme.typography.labelSmall
                                 )
-                                .height(35.dp)
-                        ) {
-                            Text(
-                                text = "Edit Profile", style = MaterialTheme.typography.labelSmall
-                            )
+                            }
                         }
 
                         Text(
-                            text = "My Blogs",
+                            text = if (isMe) "My Blogs" else "Blogs",
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 16.dp, top = 24.dp),
+                                .padding(
+                                    start = 16.dp,
+                                    top = if (user.bio.isNullOrBlank()) 0.dp else 24.dp
+                                ),
                             textAlign = TextAlign.Start
                         )
                     }
 
                     if (blogs.isNullOrEmpty()) {
-                        item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 24.dp, vertical = 17.dp),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.undraw_blog_post_f68f),
-                                    contentDescription = "No blogs illustration",
+                        if (isMe) {
+                            item {
+                                Column(
                                     modifier = Modifier
-                                        .fillMaxWidth(0.6f)
-                                        .aspectRatio(1.8f)
-                                )
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 24.dp, vertical = 17.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.undraw_blog_post_f68f),
+                                        contentDescription = "No blogs illustration",
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.6f)
+                                            .aspectRatio(1.8f)
+                                    )
 
-                                Spacer(modifier = Modifier.height(24.dp))
+                                    Spacer(modifier = Modifier.height(24.dp))
 
+                                    Text(
+                                        text = "No Blogs Yet",
+                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    Text(
+                                        text = "Start sharing your thoughts and ideas by creating your first blog post.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(24.dp))
+
+                                    Button(
+                                        onClick = {
+                                            onCreateBlog()
+                                        },
+                                        shape = RoundedCornerShape(4.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.surface,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        contentPadding = PaddingValues(horizontal = 4.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.9f)
+                                            .border(
+                                                width = 0.5.dp,
+                                                color = MaterialTheme.colorScheme.outline,
+                                                shape = RoundedCornerShape(4.dp)
+                                            )
+                                            .height(35.dp)
+                                    ) {
+                                        Text(
+                                            text = "Create Blog",
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            }
+
+                        } else {
+                            item {
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = "No Blogs Yet",
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onBackground
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                Text(
-                                    text = "Start sharing your thoughts and ideas by creating your first blog post.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                )
-
-                                Spacer(modifier = Modifier.height(24.dp))
-
-                                Button(
-                                    onClick = {
-                                        onCreateBlog()
-                                    },
-                                    shape = RoundedCornerShape(4.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    contentPadding = PaddingValues(horizontal = 4.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.9f)
-                                        .border(
-                                            width = 0.5.dp,
-                                            color = MaterialTheme.colorScheme.outline,
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
-                                        .height(35.dp)
-                                ) {
-                                    Text(
-                                        text = "Create Blog",
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                }
                             }
                         }
                     } else {

@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.presentation.components.BottomNavBar
 import com.mindpalace.app.presentation.screens.all_fragments.AllFragmentsScreen
 import com.mindpalace.app.presentation.screens.blog.BlogScreen
@@ -33,6 +34,7 @@ import com.mindpalace.app.presentation.screens.profile.ProfileScreen
 import com.mindpalace.app.presentation.screens.profile.ProfileViewModel
 import com.mindpalace.app.presentation.screens.profile.edit_profile.EditProfileScreen
 import com.mindpalace.app.presentation.screens.search.SearchScreen
+import io.github.jan.supabase.auth.auth
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -43,6 +45,7 @@ fun RootScreen(
     val mindFragmentViewModel: MindFragmentViewModel = hiltViewModel()
     val state by mindFragmentViewModel.state.collectAsState()
     val bottomNavController = rememberNavController()
+    val currentUserId = SupabaseClient.client.auth.currentUserOrNull()?.id
 
     LaunchedEffect(state) {
         if (state is MindFragmentState.Success) {
@@ -66,18 +69,18 @@ fun RootScreen(
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute in listOf(
-        "home_screen",
-        "search_screen",
-        "blogs_screen",
-        "profile_screen"
-    )
+    val showBottomBar = currentRoute?.startsWith("home_screen") == true ||
+            currentRoute?.startsWith("search_screen") == true ||
+            currentRoute?.startsWith("blogs_screen") == true ||
+            currentRoute?.startsWith("profile_screen/") == true
+
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
                     navController = bottomNavController,
+                    currentUserId = currentUserId ?: ""
                 )
             }
         },
@@ -112,9 +115,12 @@ fun RootScreen(
                         }
                     )
                 }
-                composable("profile_screen") {
+                composable("profile_screen/{id}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")
+
                     val viewModel: ProfileViewModel = hiltViewModel()
                     ProfileScreen(
+                        userId = id,
                         profileViewModel = viewModel,
                         onClickUserBlog = { id ->
                             bottomNavController.navigate("mind_blog_editor/$id")
@@ -127,7 +133,8 @@ fun RootScreen(
                         },
                         onClickEditProfile = {
                             bottomNavController.navigate("edit_profile_screen")
-                        }
+                        },
+                        onNavigateBack = { bottomNavController.popBackStack() }
                     )
                 }
                 composable("mind_fragment_editor/{id}") { backStackEntry ->
@@ -145,7 +152,11 @@ fun RootScreen(
                     if (id != null) {
                         MindBlogEditorScreen(
                             blogId = id,
-                            onNavigateBack = { bottomNavController.popBackStack() })
+                            onNavigateBack = { bottomNavController.popBackStack() },
+                            onClickAuthor = { id ->
+                                bottomNavController.navigate("profile_screen/$id")
+                            }
+                            )
                     } else {
                         bottomNavController.popBackStack()
                     }

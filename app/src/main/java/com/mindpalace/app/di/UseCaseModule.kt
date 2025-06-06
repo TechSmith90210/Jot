@@ -25,6 +25,7 @@ import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByCreatedAtUs
 import com.mindpalace.app.domain.usecase.mind_fragment.GetFragmentsByLastOpenedUseCase
 import com.mindpalace.app.domain.usecase.mind_fragment.MindFragmentUseCases
 import com.mindpalace.app.domain.usecase.mind_fragment.UpdateFragmentUseCase
+import com.mindpalace.app.domain.usecase.user.GetUserProfileUseCase
 import com.mindpalace.app.domain.usecase.user.UpdateUserAvatarUseCase
 import com.mindpalace.app.domain.usecase.user.UpdateUserProfileUseCase
 import dagger.Module
@@ -66,6 +67,12 @@ object UseCaseModule {
     @Singleton
     fun provideUpdateUserProfileUseCase(userRepository: UserRepository): UpdateUserProfileUseCase {
         return UpdateUserProfileUseCase(userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUserProfileUseCase(userRepository: UserRepository): GetUserProfileUseCase {
+        return GetUserProfileUseCase(userRepository)
     }
 
     @Provides

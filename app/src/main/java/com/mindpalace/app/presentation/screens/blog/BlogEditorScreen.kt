@@ -5,6 +5,7 @@ import MindFragmentJson
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +26,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -62,6 +66,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mindpalace.app.R
 import com.mindpalace.app.core.SupabaseClient
 import com.mindpalace.app.core.formatCustomDateTime
+import com.mindpalace.app.domain.model.MindBlog
+import com.mindpalace.app.presentation.components.AvatarImage
 import com.mindpalace.app.presentation.components.BlockComponent
 import com.mindpalace.app.presentation.components.EditingToolbar
 import com.mindpalace.app.presentation.components.RichTextBlock
@@ -81,6 +87,7 @@ fun MindBlogEditorScreen(
     blogId: String,
     onNavigateBack: () -> Unit,
     viewModel: BlogViewModel = hiltViewModel(),
+    onClickAuthor: (String) -> Unit,
 ) {
     val blog by viewModel.blog.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -97,8 +104,7 @@ fun MindBlogEditorScreen(
     var lastSavedState by remember { mutableStateOf("") }
 
     val auth: Auth = SupabaseClient.client.auth
-    val currentUserId =
-        auth.currentUserOrNull()?.id ?: return
+    val currentUserId = auth.currentUserOrNull()?.id ?: return
     val isEditor = blog?.authorId == currentUserId
 
 
@@ -123,12 +129,9 @@ fun MindBlogEditorScreen(
             // Construct new content
             val currentState = Json.encodeToString(
                 MindFragmentJson(
-                    title = title,
-                    blocks = blocks.map {
-                        BlockJson(it.id, blockStates[it.id]?.toHtml() ?: "")
-                    }
-                )
-            )
+                title = title, blocks = blocks.map {
+                    BlockJson(it.id, blockStates[it.id]?.toHtml() ?: "")
+                }))
 
             // Only save if something changed
             if (currentState != lastSavedState) {
@@ -136,7 +139,16 @@ fun MindBlogEditorScreen(
                 blog?.let {
                     val updated =
                         it.copy(title = title, description = description, content = currentState)
-                    viewModel.updateBlog(updated)
+                    val updatedBlog = MindBlog(
+                        updated.id,
+                        updated.authorId,
+                        updated.title,
+                        updated.description,
+                        updated.content,
+                        updated.publishDate,
+                        updated.lastUpdated
+                    )
+                    viewModel.updateBlog(updatedBlog)
                 }
             }
         }
@@ -155,7 +167,16 @@ fun MindBlogEditorScreen(
                     )
                 )
                 val updated = it.copy(title = title, description = description, content = content)
-                viewModel.updateBlog(updated)
+                val updatedBlog = MindBlog(
+                    updated.id,
+                    updated.authorId,
+                    updated.title,
+                    updated.description,
+                    updated.content,
+                    updated.publishDate,
+                    updated.lastUpdated
+                )
+                viewModel.updateBlog(updatedBlog)
             }
         }
     }
@@ -164,10 +185,12 @@ fun MindBlogEditorScreen(
         viewModel.getBlogById(blogId)
     }
 
-    LaunchedEffect(blog) {
+    LaunchedEffect(blog?.id) {
         blog?.let {
-            title = it.title
-            description = it.description
+            // Prevent double-setting if already restored
+            if (title != it.title) title = it.title
+            if (description != it.description) description = it.description
+
             blocks.clear()
             val parsed = Json.decodeFromString<MindFragmentJson>(it.content)
             blocks.addAll(parsed.blocks.map { RichTextBlock(it.id) })
@@ -177,52 +200,47 @@ fun MindBlogEditorScreen(
         }
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(
             scrollBehavior.nestedScrollConnection
-        ),
-        topBar = {
-            LargeTopAppBar(
-
+        ), topBar = {
+            CenterAlignedTopAppBar(
                 title = {
-                    Column (verticalArrangement = Arrangement.spacedBy(5.dp)){
-                        Text("Description",
-                            style=MaterialTheme.typography.labelSmall
+                    TextButton(onClick = {
+                        onClickAuthor(
+                            blog?.authorId.toString()
+                        )
+                    }) {
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(modifier = Modifier.size(20.dp)) {
+                                AvatarImage(
+                                    blog?.user?.avatarId.toString()
+                                )
+                            }
+                            Text(
+                                if (isEditor) "You" else blog?.user?.displayName.toString(),
+                                style = MaterialTheme.typography.titleSmall
                             )
-                        BasicTextField(
-                            readOnly = !isEditor,
-                            value = description,
-                            onValueChange = {
-                                description = it
-                                scheduleAutoSave()
-                            },
 
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
-                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                            decorationBox = { innerTextField ->
-                                if (description.isEmpty()) {
-                                    Text(
-                                        "Add a short description...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                    )
-                                }
-                                innerTextField()
-                            })
+                        }
                     }
+
                 }, actions = {
-                    if(isEditor) {
+                    if (isEditor) {
                         IconButton(
                             onClick = {
                                 showBottomSheet = true
                             }) {
                             Icon(
-                                painter = painterResource(R.drawable.more_line), contentDescription = ""
+                                painter = painterResource(R.drawable.more_line),
+                                contentDescription = ""
                             )
                         }
                     }
@@ -237,8 +255,7 @@ fun MindBlogEditorScreen(
                 }, colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     scrolledContainerColor = MaterialTheme.colorScheme.background
-                ),
-                scrollBehavior = scrollBehavior
+                ), scrollBehavior = scrollBehavior
             )
         }, content = { padding ->
             LazyColumn(
@@ -246,6 +263,41 @@ fun MindBlogEditorScreen(
                     .padding(padding)
                     .fillMaxSize()
             ) {
+
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(horizontal = 14.dp)
+                    ) {
+                        Text(
+                            "Description", style = MaterialTheme.typography.labelSmall
+                        )
+                        BasicTextField(
+                            readOnly = !isEditor,
+                            value = description,
+                            onValueChange = {
+                                description = it
+                                scheduleAutoSave()
+                            },
+
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            ),
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                            decorationBox = { innerTextField ->
+                                if (description.isEmpty()) {
+                                    Text(
+                                        "Add a short description...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                    )
+                                }
+                                innerTextField()
+                            })
+                    }
+                }
+
                 item {
                     BasicTextField(
                         readOnly = !isEditor,
@@ -273,6 +325,7 @@ fun MindBlogEditorScreen(
                         })
                 }
 
+
                 itemsIndexed(blocks, key = { _, block -> block.id }) { index, block ->
                     val state = blockStates.getOrPut(block.id) { rememberRichTextState() }
                     val focusRequester = focusRequesters.getOrPut(block.id) { FocusRequester() }
@@ -281,18 +334,16 @@ fun MindBlogEditorScreen(
                         if (focusBlockId == block.id) focusRequester.requestFocus()
                     }
 
-                    BlockComponent(
-                        isEditor = isEditor,
-                        richTextState = state, onNormalInsert = {
-                            val newBlock = RichTextBlock()
-                            blocks.add(index + 1, newBlock)
-                            focusBlockId = newBlock.id
-                        }, onDeleteBlock = {
-                            if (blocks.size > 1) {
-                                blocks.removeAt(index)
-                                focusBlockId = blocks.getOrNull(index - 1)?.id
-                            }
-                        }, focusRequester = focusRequester, onFocused = { focusBlockId = block.id })
+                    BlockComponent(isEditor = isEditor, richTextState = state, onNormalInsert = {
+                        val newBlock = RichTextBlock()
+                        blocks.add(index + 1, newBlock)
+                        focusBlockId = newBlock.id
+                    }, onDeleteBlock = {
+                        if (blocks.size > 1) {
+                            blocks.removeAt(index)
+                            focusBlockId = blocks.getOrNull(index - 1)?.id
+                        }
+                    }, focusRequester = focusRequester, onFocused = { focusBlockId = block.id })
                 }
                 if (isEditor) {
                     item {
@@ -334,17 +385,14 @@ fun MindBlogEditorScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(9.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            shape = RoundedCornerShape(9.dp), modifier = Modifier.fillMaxWidth()
 
                         ) {
                             ListItem(
                                 modifier = Modifier.clickable {
                                     showDialog = true
 
-                                },
-                                colors = ListItemDefaults.colors(
+                                }, colors = ListItemDefaults.colors(
                                     containerColor = MaterialTheme.colorScheme.surface,
                                 ), headlineContent = {
                                     Text(
@@ -394,57 +442,53 @@ fun MindBlogEditorScreen(
 
             }
             if (showDialog) {
-                BasicAlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    content = {
-                        Surface(
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .wrapContentHeight(),
-                            shape = MaterialTheme.shapes.medium,
-                            tonalElevation = AlertDialogDefaults.TonalElevation
-                        ) {
-                            Column(modifier = Modifier.padding(20.dp)) {
-                                Text(
-                                    text = "Delete Blog?",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
+                BasicAlertDialog(onDismissRequest = { showDialog = false }, content = {
+                    Surface(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight(),
+                        shape = MaterialTheme.shapes.medium,
+                        tonalElevation = AlertDialogDefaults.TonalElevation
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Text(
+                                text = "Delete Blog?",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                                Text(
-                                    text = "Are you sure you want to delete this Blog? This action cannot be undone.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            Text(
+                                text = "Are you sure you want to delete this Blog? This action cannot be undone.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
 
-                                Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(onClick = { showDialog = false }) {
+                                    Text("Cancel")
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                TextButton(
+                                    onClick = {
+                                        showDialog = false
+                                        onConfirmDelete()
+                                    }, colors = ButtonDefaults.textButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.error
+                                    )
                                 ) {
-                                    TextButton(onClick = { showDialog = false }) {
-                                        Text("Cancel")
-                                    }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    TextButton(
-                                        onClick = {
-                                            showDialog = false
-                                            onConfirmDelete()
-                                        },
-                                        colors = ButtonDefaults.textButtonColors(
-                                            contentColor = MaterialTheme.colorScheme.error
-                                        )
-                                    ) {
-                                        Text("Delete")
-                                    }
+                                    Text("Delete")
                                 }
                             }
                         }
                     }
-                )
+                })
             }
         }, bottomBar = {
             val focusedState = focusBlockId?.let { blockStates[it] }

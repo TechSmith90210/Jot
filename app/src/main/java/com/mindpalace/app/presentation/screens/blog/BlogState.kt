@@ -9,7 +9,7 @@ sealed class BlogState {
 
     data class Success(val blogId: String? = null) : BlogState()
 
-    data class SuccessBlog(val blog: MindBlog) : BlogState()
+    data class SuccessBlog(val blog: MindBlogWithUser? = null) : BlogState()
 
     data class SuccessList(
         val latestBlogs: List<MindBlogWithUser>? = emptyList(),

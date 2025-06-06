@@ -80,6 +80,19 @@ class UserRepositoryImpl(private val supabaseClient: SupabaseClient) : UserRepos
             Result.failure(e)
         }
     }
+
+    override suspend fun getProfile(userId: String): Result<User> {
+        return try {
+            val user = supabaseClient.client.from("users").select {
+                filter {
+                    User::id eq userId
+                }
+            }.decodeSingle<User>()
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
 
 //fun main() = runBlocking {

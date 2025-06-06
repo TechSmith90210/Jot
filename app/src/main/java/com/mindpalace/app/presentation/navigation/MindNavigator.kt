@@ -39,18 +39,16 @@ fun MindNavigator(
 
             SplashScreen(
                 onNavigateToWelcome = {
-                    navController.navigate("welcomeScreen") {
-                        popUpTo("splashScreen") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                onNavigateToHome = {
-                    navController.navigate("rootScreen") {
-                        popUpTo("splashScreen") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                viewModel = splashViewModel
+                navController.navigate("welcomeScreen") {
+                    popUpTo("splashScreen") { inclusive = true }
+                    launchSingleTop = true
+                }
+            }, onNavigateToHome = {
+                navController.navigate("rootScreen") {
+                    popUpTo("splashScreen") { inclusive = true }
+                    launchSingleTop = true
+                }
+            }, viewModel = splashViewModel
             )
         }
 
@@ -65,9 +63,7 @@ fun MindNavigator(
         composable("createAccountScreen") {
             val signupViewModel: SignupViewModel = hiltViewModel()
             SignUpScreen(
-                modifier = modifier,
-                navController = navController,
-                viewModel = signupViewModel
+                modifier = modifier, navController = navController, viewModel = signupViewModel
             )
         }
         composable("loginScreen") {
@@ -85,8 +81,7 @@ fun MindNavigator(
                     navController.navigate("avatarSelectorScreen") {
                         popUpTo("loginScreen") { inclusive = true }
                     }
-                }
-            )
+                })
         }
         composable("avatarSelectorScreen") {
             val avatarSelectionViewModel: AvatarSelectionViewModel = hiltViewModel()
@@ -98,8 +93,7 @@ fun MindNavigator(
         }
         // Nested root screen graph
         navigation(
-            startDestination = "home_screen",
-            route = "rootGraph"
+            startDestination = "home_screen", route = "rootGraph"
         ) {
             // RootScreen that contains the Scaffold and BottomNavBar
             composable("rootScreen") {
@@ -108,22 +102,17 @@ fun MindNavigator(
                         navController.navigate("splashScreen") {
                             popUpTo("rootScreen") { inclusive = true }
                         }
-                    }
-                )
+                    })
             }
 
             composable("home_screen") {
-                HomeScreen(
-                    onFragmentClick = { id ->
-                        navController.navigate("mind_fragment_editor/$id")
-                    },
-                    onCreateFragmentClick = {
-                        navController.navigate("mind_fragment_editor")
-                    },
-                    onViewMoreClick = {
-                        navController.navigate("all_fragments_screen")
-                    }
-                )
+                HomeScreen(onFragmentClick = { id ->
+                    navController.navigate("mind_fragment_editor/$id")
+                }, onCreateFragmentClick = {
+                    navController.navigate("mind_fragment_editor")
+                }, onViewMoreClick = {
+                    navController.navigate("all_fragments_screen")
+                })
             }
             composable("all_fragments_screen") {
                 AllFragmentsScreen(
@@ -133,28 +122,26 @@ fun MindNavigator(
                     },
                     onCreateFragmentClick = {
                         navController.navigate("mind_fragment_editor")
-                    }
-                )
+                    })
 
             }
 //            composable("search_screen") { SearchScreen(Modifier) }
             composable("blogs_screen") {
                 val blogViewModel: BlogViewModel = hiltViewModel()
-                BlogScreen(
-                    Modifier,
-                    onCreateBlogClick = {
-                        blogViewModel.createMindBlog()
-                    },
-                    onBlogCLick = { id ->
-                        navController.navigate("mind_blog_editor/$id")
-                    }
-                )
+                BlogScreen(Modifier, onCreateBlogClick = {
+                    blogViewModel.createMindBlog()
+                }, onBlogCLick = { id ->
+                    navController.navigate("mind_blog_editor/$id")
+                })
             }
-            composable("profile_screen") {
+            composable("profile_screen/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+
                 val viewModel: ProfileViewModel = hiltViewModel()
                 val blogViewModel: BlogViewModel = hiltViewModel()
 
                 ProfileScreen(
+                    userId = id,
                     profileViewModel = viewModel,
                     onClickUserBlog = { id ->
                         navController.navigate("mind_blog_editor/$id")
@@ -165,15 +152,15 @@ fun MindNavigator(
                     },
                     onClickEditProfile = {
                         navController.navigate("edit_profile_screen")
-                    }
+                    },
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
             composable("mind_fragment_editor/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 if (id != null) {
                     MindFragmentEditorScreen(
-                        id = id,
-                        onNavigateBack = { navController.popBackStack() })
+                        id = id, onNavigateBack = { navController.popBackStack() })
                 } else {
                     navController.popBackStack()
                 }
@@ -183,19 +170,14 @@ fun MindNavigator(
                 if (id != null) {
                     MindBlogEditorScreen(
                         blogId = id,
-                        onNavigateBack = { navController.popBackStack() })
+                        onNavigateBack = { navController.popBackStack() },
+                        onClickAuthor = { userId ->
+                            navController.navigate("profile_screen/$userId")
+                        })
                 } else {
                     navController.popBackStack()
                 }
             }
-            composable("settings_screen") {
-                SettingsScreen(
-                    Modifier,
-                    onNavigateBack = { navController.navigate("profile_screen") },
-                    onSignOutSuccess = { navController.navigate("splashScreen") }
-                )
-            }
-
         }
     }
 }

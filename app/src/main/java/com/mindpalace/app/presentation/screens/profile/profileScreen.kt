@@ -190,6 +190,8 @@ fun ProfileScreen(
                             }
                         }
 
+                        Spacer(modifier=Modifier.height(15.dp))
+
                         Text(
                             text = if (isMe) "My Blogs" else "Blogs",
                             style = MaterialTheme.typography.labelSmall,

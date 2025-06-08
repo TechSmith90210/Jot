@@ -385,7 +385,11 @@ fun MindBlogEditorScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(9.dp), modifier = Modifier.fillMaxWidth()
+                            shape = RoundedCornerShape(9.dp), modifier = Modifier.fillMaxWidth().border(
+                                0.5.dp,
+                                MaterialTheme.colorScheme.outline,
+                                RoundedCornerShape(9.dp)
+                            )
 
                         ) {
                             ListItem(
@@ -409,8 +413,12 @@ fun MindBlogEditorScreen(
                         }
 
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(9.dp),
+                            modifier = Modifier.fillMaxWidth().border(
+                                0.5.dp,
+                                MaterialTheme.colorScheme.outline,
+                                RoundedCornerShape(9.dp)
+                            ),
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(

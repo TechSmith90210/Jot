@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mindpalace.app.R
@@ -155,7 +156,8 @@ fun BlogScreen(
                                     Text(
                                         text = blog.title,
                                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                                        maxLines = 2
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
@@ -170,7 +172,8 @@ fun BlogScreen(
                                     text = blog.description,
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 2,
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             },
                             leadingContent = {

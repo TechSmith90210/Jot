@@ -1,6 +1,7 @@
 package com.mindpalace.app.presentation.screens.mind_fragment
 
 import MindFragmentJson
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -220,7 +221,6 @@ fun MindFragmentEditorScreen(
             state = rememberLazyListState(),
             modifier = Modifier
                 .padding(padding)
-                .padding(horizontal = 16.dp)
                 .fillMaxSize(),
         ) {
             item {
@@ -231,7 +231,7 @@ fun MindFragmentEditorScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 8.dp),
+                        .padding(vertical = 12.dp, horizontal = 14.dp),
                     textStyle = MaterialTheme.typography.headlineLarge.copy(
                         color = MaterialTheme.colorScheme.onBackground, letterSpacing = 1.sp
                     ),
@@ -327,7 +327,11 @@ fun MindFragmentEditorScreen(
                     Surface(
                         shape = RoundedCornerShape(9.dp),
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth().border(
+                                width = 0.7.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(9.dp)
+                            )
 
                     ) {
                         ListItem(
@@ -352,8 +356,12 @@ fun MindFragmentEditorScreen(
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(9.dp),
+                        modifier = Modifier.fillMaxWidth().border(
+                            width = 0.7.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(9.dp)
+                        ),
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(

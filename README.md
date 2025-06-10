@@ -19,7 +19,7 @@
 
 ## 📱 APK Download
 
-Get the latest APK from the [Releases](https://github.com/TechSmith90210/Jot/releases) section.
+Get the latest APK from the [Releases](https://github.com/TechSmith90210/MindPalace/releases) section.
 
 ---
 
